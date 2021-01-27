@@ -264,7 +264,7 @@ class AspectElevationPainter extends CustomPainter {
     double labelRadius = size.height / 2.2;
     var angle = ((math.pi * 2) / sides);
 
-    for (int i = 0; i <= sides; i++) {
+    for (int i = 0; i < sides; i++) {
       var angleOffset = (angle * i);
       double x = labelRadius * math.cos(angleOffset) + center.dx;
       double y = labelRadius * math.sin(angleOffset) + center.dy;
