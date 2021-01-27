@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:backcountry_plan/models.dart';
 import 'package:backcountry_plan/problem.dart';
@@ -239,22 +239,60 @@ class AspectElevationPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     var paint = Paint()
       ..color = Colors.grey
-      ..strokeWidth = 3
+      ..strokeWidth = 2
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     Offset center = Offset(size.width / 2, size.height / 2);
-    double outerRadius = size.height / 2;
-    double middleRadius = size.height / 3;
-    double innerRadius = size.height / 6;
-    var outerOctagonPath = _polygonPath(8, outerRadius, center, 2.0, true);
+    const sides = 8;
+
+    // Draw octagons
+    double outerRadius = size.height / 2.5;
+    double middleRadius = size.height / 4;
+    double innerRadius = size.height / 7;
+    var outerOctagonPath = _polygonPath(sides, outerRadius, center, 2.0, true);
     canvas.drawPath(outerOctagonPath, paint);
 
-    var middleOctagonPath = _polygonPath(8, middleRadius, center, 2.0, false);
+    var middleOctagonPath =
+        _polygonPath(sides, middleRadius, center, 2.0, false);
     canvas.drawPath(middleOctagonPath, paint);
 
-    var innerOctagonPath = _polygonPath(8, innerRadius, center, 2.0, false);
+    var innerOctagonPath = _polygonPath(sides, innerRadius, center, 2.0, false);
     canvas.drawPath(innerOctagonPath, paint);
+
+    // Draw labels
+    double labelRadius = size.height / 2.2;
+    var angle = ((math.pi * 2) / sides);
+
+    for (int i = 0; i <= sides; i++) {
+      var angleOffset = (angle * i);
+      double x = labelRadius * math.cos(angleOffset) + center.dx;
+      double y = labelRadius * math.sin(angleOffset) + center.dy;
+      var painter = _labelTextPainter(ProblemAspect.labels[i]);
+      var labelOffset =
+          Offset(x - (painter.width / 2), y - (painter.height / 2));
+      painter.paint(canvas, labelOffset);
+    }
+  }
+
+  TextPainter _labelTextPainter(String label) {
+    final textStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 8,
+    );
+    final textSpan = TextSpan(
+      text: label,
+      style: textStyle,
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(
+      minWidth: 0,
+    );
+
+    return textPainter;
   }
 
   Path _polygonPath(
@@ -265,26 +303,25 @@ class AspectElevationPainter extends CustomPainter {
     bool fill,
   ) {
     var path = Path();
-    var sides = 8;
-    var angle = ((pi * 2) / sides);
+    var angle = ((math.pi * 2) / sides);
     var angleStart = angle / rotateFactor;
 
     Offset startPoint = Offset(
-      radius * cos(angleStart),
-      radius * sin(angleStart),
+      radius * math.cos(angleStart),
+      radius * math.sin(angleStart),
     );
 
     path.moveTo(startPoint.dx + center.dx, startPoint.dy + center.dy);
 
     for (int i = 0; i <= sides; i++) {
       var angleOffset = (angle * i) + angleStart;
-      double x = radius * cos(angleOffset) + center.dx;
-      double y = radius * sin(angleOffset) + center.dy;
+      double x = radius * math.cos(angleOffset) + center.dx;
+      double y = radius * math.sin(angleOffset) + center.dy;
       path.lineTo(x, y);
 
       if (i < (sides / 2)) {
-        double xCross = radius * -cos(angleOffset) + center.dx;
-        double yCross = radius * -sin(angleOffset) + center.dy;
+        double xCross = radius * -math.cos(angleOffset) + center.dx;
+        double yCross = radius * -math.sin(angleOffset) + center.dy;
         path.lineTo(xCross, yCross);
         path.lineTo(x, y);
       }

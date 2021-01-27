@@ -379,6 +379,17 @@ class ProblemAspect {
     AspectType.northWest: 'Northwest'
   };
 
+  static final List<String> labels = [
+    'E',
+    'SE',
+    'S',
+    'SW',
+    'W',
+    'NW',
+    'N',
+    'NE'
+  ];
+
   List<AspectType> get aspects =>
       activeAspects.keys.where((e) => activeAspects[e]).toList();
   Map<AspectType, bool> activeAspects;
