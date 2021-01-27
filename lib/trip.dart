@@ -244,3 +244,38 @@ class TripPageState extends State<TripPage> {
     }
   }
 }
+
+class PlanSummary extends StatelessWidget {
+  final PlanModel plan;
+  final Function(BuildContext) onNavigateToPlan;
+
+  PlanSummary({@required this.plan, @required this.onNavigateToPlan});
+
+  @override
+  Widget build(BuildContext context) {
+    if (plan == null) {
+      return ElevatedButton(
+        onPressed: () {
+          onNavigateToPlan(context);
+        },
+        child: Text('Create plan'),
+      );
+    }
+    return Card(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: Icon(Icons.vpn_key),
+            title: Text('Key Message:'),
+            subtitle: Text(plan.keyMessage),
+            trailing: Icon(Icons.chevron_right),
+            onTap: () {
+              onNavigateToPlan(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}

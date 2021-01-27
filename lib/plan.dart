@@ -3,74 +3,23 @@ import 'package:backcountry_plan/problem.dart';
 import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';
 
-class PlanSummary extends StatelessWidget {
-  final PlanModel plan;
-  final Function(BuildContext) onNavigateToPlan;
-
-  PlanSummary({@required this.plan, @required this.onNavigateToPlan});
-
-  @override
-  Widget build(BuildContext context) {
-    if (plan == null) {
-      return ElevatedButton(
-        onPressed: () {
-          onNavigateToPlan(context);
-        },
-        child: Text('Create plan'),
-      );
-    }
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: Icon(Icons.vpn_key),
-            title: Text('Key Message:'),
-            subtitle: Text(plan.keyMessage),
-            trailing: Icon(Icons.chevron_right),
-            onTap: () {
-              onNavigateToPlan(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PlanPage extends StatelessWidget {
+class PlanPage extends StatefulWidget {
   final PlanModel plan;
 
-  PlanPage({Key key, @required this.plan}) : super(key: key);
+  PlanPage({@required this.plan}) : super();
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Edit Plan"),
-      ),
-      body: PlanForm(plan: plan),
-    );
-  }
+  State<StatefulWidget> createState() => PlanPageState(plan: plan);
 }
 
-class PlanForm extends StatefulWidget {
-  final PlanModel plan;
-
-  PlanForm({@required this.plan}) : super();
-
-  @override
-  State<StatefulWidget> createState() => PlanFormState(plan: plan);
-}
-
-class PlanFormState extends State<PlanForm> {
+class PlanPageState extends State<PlanPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController keyMessageController = TextEditingController();
   final TextEditingController forecastController = TextEditingController();
   final PlanModel plan;
   List<AvalancheProblemModel> problems = [];
 
-  PlanFormState({@required this.plan}) : super();
+  PlanPageState({@required this.plan}) : super();
 
   @override
   void initState() {
@@ -122,6 +71,16 @@ class PlanFormState extends State<PlanForm> {
     }
   }
 
+  _onSave(BuildContext context) {
+    // Validate will return true if the form is valid, or false if
+    // the form is invalid.
+    if (_formKey.currentState.validate()) {
+      plan.keyMessage = keyMessageController.text;
+      plan.forecast = forecastController.text;
+      Navigator.pop(context, plan);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     var problemTiles = problems.map((p) => ListTile(
@@ -131,66 +90,60 @@ class PlanFormState extends State<PlanForm> {
           onTap: () => _onEditProblem(context, p),
         ));
 
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextFormField(
-              controller: keyMessageController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Key message',
-                hintText: 'Key message for the day',
-              ),
-              keyboardType: TextInputType.multiline,
-              maxLines: null,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Edit Plan"),
+        actions: [
+          TextButton(
+            child: Text(
+              'Save',
+              style: TextStyle(color: Colors.white),
             ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: forecastController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Weather factors',
-                hintText: 'Current and forecast weather factors',
-              ),
-              keyboardType: TextInputType.multiline,
-              minLines: 3,
-              maxLines: null,
-            ),
-            const SizedBox(height: 20),
-            SectionText(text: "Problems:"),
-            ...problemTiles,
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _onAddProblem(context),
-              child: Text('Add problem'),
-            ),
-            Expanded(
-              child: Align(
-                alignment: FractionalOffset.bottomLeft,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Validate will return true if the form is valid, or false if
-                      // the form is invalid.
-                      if (_formKey.currentState.validate()) {
-                        plan.keyMessage = keyMessageController.text;
-                        plan.forecast = forecastController.text;
-                        Navigator.pop(context, plan);
-                      }
-                    },
-                    child: Text('Save Plan'),
-                  ),
+            onPressed: () => _onSave(context),
+          )
+        ],
+      ),
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                controller: keyMessageController,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Key message',
+                  hintText: 'Key message for the day',
                 ),
+                keyboardType: TextInputType.multiline,
+                maxLines: null,
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: forecastController,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Weather factors',
+                  hintText: 'Current and forecast weather factors',
+                ),
+                keyboardType: TextInputType.multiline,
+                minLines: 3,
+                maxLines: null,
+              ),
+              const SizedBox(height: 20),
+              SectionText(text: "Problems:"),
+              ...problemTiles,
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () => _onAddProblem(context),
+                child: Text('Add problem'),
+              ),
+            ],
+          ),
         ),
       ),
     );
