@@ -122,19 +122,22 @@ class TripModel extends BaseModel {
 
 class PlanModel extends BaseModel {
   String keyMessage;
+  String forecast;
   int tripId;
 
-  PlanModel({id, this.keyMessage, this.tripId}) : super(id: id);
+  PlanModel({id, this.keyMessage, this.forecast, this.tripId}) : super(id: id);
 }
 
 class PlanModelProvider extends BaseProvider<PlanModel> {
   static final String _tableName = "backcountry_plan";
   static final String _columnId = "id";
   static final String _columnKeyMessage = "key_message";
+  static final String _columnForecast = "forecast";
   static final String _columnTripId = "trip_id";
   static final List<String> _columns = [
     _columnId,
     _columnKeyMessage,
+    _columnForecast,
     _columnTripId
   ];
 
@@ -142,6 +145,7 @@ class PlanModelProvider extends BaseProvider<PlanModel> {
                                         CREATE TABLE $_tableName (
                                           $_columnId INTEGER PRIMARY KEY,
                                           $_columnKeyMessage TEXT,
+                                          $_columnForecast TEXT,
                                           $_columnTripId INTEGER,
                                           FOREIGN KEY ($_columnTripId) REFERENCES ${TripModelProvider._tableName}(${TripModelProvider._columnId})
                                         )
@@ -162,7 +166,8 @@ class PlanModelProvider extends BaseProvider<PlanModel> {
   Map<String, dynamic> toMap(PlanModel plan) {
     var map = <String, dynamic>{
       _columnTripId: plan.tripId,
-      _columnKeyMessage: plan.keyMessage
+      _columnKeyMessage: plan.keyMessage,
+      _columnForecast: plan.forecast,
     };
 
     if (plan.id != null) {
@@ -176,6 +181,7 @@ class PlanModelProvider extends BaseProvider<PlanModel> {
     return PlanModel(
       id: e[_columnId],
       keyMessage: e[_columnKeyMessage],
+      forecast: e[_columnForecast],
       tripId: e[_columnTripId],
     );
   }

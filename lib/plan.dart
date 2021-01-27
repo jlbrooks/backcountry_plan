@@ -1,5 +1,6 @@
 import 'package:backcountry_plan/models.dart';
 import 'package:backcountry_plan/problem.dart';
+import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';
 
 class PlanSummary extends StatelessWidget {
@@ -65,6 +66,7 @@ class PlanForm extends StatefulWidget {
 class PlanFormState extends State<PlanForm> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController keyMessageController = TextEditingController();
+  final TextEditingController forecastController = TextEditingController();
   final PlanModel plan;
   List<AvalancheProblemModel> problems = [];
 
@@ -74,6 +76,9 @@ class PlanFormState extends State<PlanForm> {
   void initState() {
     if (plan.keyMessage.isNotEmpty) {
       keyMessageController.text = plan.keyMessage;
+    }
+    if (plan.forecast.isNotEmpty) {
+      forecastController.text = plan.forecast;
     }
     AvalancheProblemModelProvider().getByPlanId(plan.id).then((_problems) {
       setState(() {
@@ -143,14 +148,24 @@ class PlanFormState extends State<PlanForm> {
               ),
               keyboardType: TextInputType.multiline,
               maxLines: null,
-              validator: (value) {
-                if (value.isEmpty) {
-                  return 'Please enter some text';
-                }
-                return null;
-              },
             ),
+            const SizedBox(height: 20),
+            TextFormField(
+              controller: forecastController,
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                border: const OutlineInputBorder(),
+                labelText: 'Weather factors',
+                hintText: 'Current and forecast weather factors',
+              ),
+              keyboardType: TextInputType.multiline,
+              minLines: 3,
+              maxLines: null,
+            ),
+            const SizedBox(height: 20),
+            SectionText(text: "Problems:"),
             ...problemTiles,
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () => _onAddProblem(context),
               child: Text('Add problem'),
@@ -166,6 +181,7 @@ class PlanFormState extends State<PlanForm> {
                       // the form is invalid.
                       if (_formKey.currentState.validate()) {
                         plan.keyMessage = keyMessageController.text;
+                        plan.forecast = forecastController.text;
                         Navigator.pop(context, plan);
                       }
                     },

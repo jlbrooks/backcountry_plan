@@ -1,4 +1,5 @@
 import 'package:backcountry_plan/models.dart';
+import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';
 
 class ProblemEditPage extends StatefulWidget {
@@ -52,13 +53,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  "Problem type:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                SectionText(text: "Problem type:"),
                 ProblemTypeInput(
                   problemType: problem.problemType,
                   onValueChanged: (newValue) {
@@ -68,13 +63,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                Text(
-                  "Problem size:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                SectionText(text: "Problem size:"),
                 const SizedBox(height: 10),
                 ProblemSizeInput(
                   problemSizeValues: problemSizeValues,
@@ -86,39 +75,15 @@ class ProblemEditPageState extends State<ProblemEditPage> {
                     });
                   },
                 ),
-                Text(
-                  "Problem likelihood:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                SectionText(text: "Problem likelihood:"),
                 ProblemLikelihoodInput(likelihood: problem.likelihood),
                 const SizedBox(height: 20),
-                Text(
-                  "Problem elevation:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                SectionText(text: "Problem elevation:"),
                 ProblemElevationInput(elevation: problem.elevation),
-                Text(
-                  "Problem aspects:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                SectionText(text: "Problem aspects:"),
                 ProblemAspectInput(aspects: problem.aspect),
                 const SizedBox(height: 10),
-                Text(
-                  "Terrain features:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                SectionText(text: "Terrain features:"),
                 const SizedBox(height: 10),
                 TextField(
                   controller: _terrainFeaturesController,
@@ -137,13 +102,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
                   },
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  "Danger trend and timing:",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                SectionText(text: "Danger trend and timing:"),
                 const SizedBox(height: 10),
                 TextField(
                   controller: _dangerTrendController,

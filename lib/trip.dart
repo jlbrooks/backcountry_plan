@@ -226,9 +226,10 @@ class TripPageState extends State<TripPage> {
 
   _navigateAndEditPlan(BuildContext context) async {
     if (plan == null) {
-      plan = PlanModel(tripId: trip.id, keyMessage: '');
+      plan = PlanModel(tripId: trip.id, keyMessage: '', forecast: '');
       await PlanModelProvider().save(plan);
     }
+
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) {
