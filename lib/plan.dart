@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:backcountry_plan/models.dart';
 import 'package:backcountry_plan/problem.dart';
 import 'package:backcountry_plan/common.dart';
@@ -83,12 +85,19 @@ class PlanPageState extends State<PlanPage> {
 
   @override
   Widget build(BuildContext context) {
-    var problemTiles = problems.map((p) => ListTile(
-          title: Text(p.problemType),
-          subtitle: Text(p.size.toString()),
-          trailing: Icon(Icons.chevron_right),
-          onTap: () => _onEditProblem(context, p),
-        ));
+    var problemTiles = problems.map((p) {
+      return Column(
+        children: [
+          ProblemSummary(problem: p),
+          ListTile(
+            title: Text(p.problemType),
+            subtitle: Text(p.size.toString()),
+            trailing: Icon(Icons.chevron_right),
+            onTap: () => _onEditProblem(context, p),
+          ),
+        ],
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -148,4 +157,146 @@ class PlanPageState extends State<PlanPage> {
       ),
     );
   }
+}
+
+class ProblemSummary extends StatelessWidget {
+  final AvalancheProblemModel problem;
+
+  const ProblemSummary({Key key, @required this.problem}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Center(
+                child: Text(
+                  problem.problemType,
+                  style: TextStyle(fontSize: 24),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(problem.likelihood.likelihood.toName()),
+                        Text('Likelihood')
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      children: [
+                        AspectElevationDiagram(problem: problem),
+                        Text('Aspect/elevation')
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(problem.size.toString()),
+                        Text('Likelihood')
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AspectElevationDiagram extends StatelessWidget {
+  final AvalancheProblemModel problem;
+
+  const AspectElevationDiagram({Key key, this.problem}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: SizedBox(
+        height: 120,
+        child: CustomPaint(
+          painter: AspectElevationPainter(),
+          child: Container(),
+        ),
+      ),
+    );
+  }
+}
+
+class AspectElevationPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    Offset center = Offset(size.width / 2, size.height / 2);
+    double outerRadius = size.height / 2;
+    double middleRadius = size.height / 3;
+    double innerRadius = size.height / 6;
+    var outerOctagonPath = _polygonPath(8, outerRadius, center, 2.0, true);
+    canvas.drawPath(outerOctagonPath, paint);
+
+    var middleOctagonPath = _polygonPath(8, middleRadius, center, 2.0, false);
+    canvas.drawPath(middleOctagonPath, paint);
+
+    var innerOctagonPath = _polygonPath(8, innerRadius, center, 2.0, false);
+    canvas.drawPath(innerOctagonPath, paint);
+  }
+
+  Path _polygonPath(
+    int sides,
+    double radius,
+    Offset center,
+    double rotateFactor,
+    bool fill,
+  ) {
+    var path = Path();
+    var sides = 8;
+    var angle = ((pi * 2) / sides);
+    var angleStart = angle / rotateFactor;
+
+    Offset startPoint = Offset(
+      radius * cos(angleStart),
+      radius * sin(angleStart),
+    );
+
+    path.moveTo(startPoint.dx + center.dx, startPoint.dy + center.dy);
+
+    for (int i = 0; i <= sides; i++) {
+      var angleOffset = (angle * i) + angleStart;
+      double x = radius * cos(angleOffset) + center.dx;
+      double y = radius * sin(angleOffset) + center.dy;
+      path.lineTo(x, y);
+
+      if (i < (sides / 2)) {
+        double xCross = radius * -cos(angleOffset) + center.dx;
+        double yCross = radius * -sin(angleOffset) + center.dy;
+        path.lineTo(xCross, yCross);
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+
+    return path;
+  }
+
+  @override
+  bool shouldRepaint(AspectElevationPainter oldDelegate) => false;
+
+  @override
+  bool shouldRebuildSemantics(AspectElevationPainter oldDelegate) => false;
 }

@@ -283,6 +283,11 @@ class ProblemLikelihood {
   void set(LikelihoodType value) {
     likelihood = value;
   }
+
+  @override
+  String toString() {
+    return likelihood.toName();
+  }
 }
 
 enum ElevationType { belowTreeline, nearTreeline, aboveTreeline }
