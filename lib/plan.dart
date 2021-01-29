@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:backcountry_plan/models.dart';
@@ -226,7 +227,10 @@ class AspectElevationDiagram extends StatelessWidget {
       child: SizedBox(
         height: 120,
         child: CustomPaint(
-          painter: AspectElevationPainter(),
+          painter: AspectElevationPainter(
+            problemAspect: problem.aspect,
+            elevation: problem.elevation,
+          ),
           child: Container(),
         ),
       ),
@@ -235,21 +239,67 @@ class AspectElevationDiagram extends StatelessWidget {
 }
 
 class AspectElevationPainter extends CustomPainter {
+  final ProblemAspect problemAspect;
+  final ProblemElevation elevation;
+  static final int sides = 8;
+  static final double angle = (math.pi * 2) / sides;
+  static final double startAngle = -(angle / 2);
+  static final Map<AspectType, double> aspectStartAngles = {
+    AspectType.east: startAngle,
+    AspectType.southEast: startAngle + (1 * angle),
+    AspectType.south: startAngle + (2 * angle),
+    AspectType.southWest: startAngle + (3 * angle),
+    AspectType.west: startAngle + (4 * angle),
+    AspectType.northWest: startAngle + (5 * angle),
+    AspectType.north: startAngle + (6 * angle),
+    AspectType.northEast: startAngle + (7 * angle),
+  };
+
+  AspectElevationPainter({this.problemAspect, this.elevation});
+
   @override
   void paint(Canvas canvas, Size size) {
+    Offset center = Offset(size.width / 2, size.height / 2);
+    double outerRadius = size.height / 2.5;
+    double middleRadius = size.height / 4;
+    double innerRadius = size.height / 7;
+    double angle = ((math.pi * 2) / sides);
+
+    // Fill it out!
+    var fillPaint = Paint()
+      ..color = Colors.grey.shade300
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
+
+    for (final activeAspect in problemAspect.aspects) {
+      stderr.writeln('Drawing ${activeAspect.toName()}');
+      var startAspectAngle = aspectStartAngles[activeAspect];
+      var endAspectAngle = startAspectAngle + angle;
+
+      stderr.writeln('Start angle ${startAspectAngle.toString()}');
+      stderr.writeln('End angle ${endAspectAngle.toString()}');
+
+      double startX = outerRadius * math.cos(startAspectAngle) + center.dx;
+      double startY = outerRadius * math.sin(startAspectAngle) + center.dy;
+      double endX = outerRadius * math.cos(endAspectAngle) + center.dx;
+      double endY = outerRadius * math.sin(endAspectAngle) + center.dy;
+
+      var path = Path();
+      path.moveTo(center.dx, center.dy);
+      path.lineTo(startX, startY);
+      path.lineTo(endX, endY);
+      path.close();
+      canvas.drawPath(path, fillPaint);
+    }
+
     var paint = Paint()
       ..color = Colors.grey
       ..strokeWidth = 2
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
-    Offset center = Offset(size.width / 2, size.height / 2);
-    const sides = 8;
-
     // Draw octagons
-    double outerRadius = size.height / 2.5;
-    double middleRadius = size.height / 4;
-    double innerRadius = size.height / 7;
     var outerOctagonPath = _polygonPath(sides, outerRadius, center, 2.0, true);
     canvas.drawPath(outerOctagonPath, paint);
 
@@ -262,7 +312,6 @@ class AspectElevationPainter extends CustomPainter {
 
     // Draw labels
     double labelRadius = size.height / 2.2;
-    var angle = ((math.pi * 2) / sides);
 
     for (int i = 0; i < sides; i++) {
       var angleOffset = (angle * i);
@@ -319,7 +368,7 @@ class AspectElevationPainter extends CustomPainter {
       double y = radius * math.sin(angleOffset) + center.dy;
       path.lineTo(x, y);
 
-      if (i < (sides / 2)) {
+      if (fill && i < (sides / 2)) {
         double xCross = radius * -math.cos(angleOffset) + center.dx;
         double yCross = radius * -math.sin(angleOffset) + center.dy;
         path.lineTo(xCross, yCross);
