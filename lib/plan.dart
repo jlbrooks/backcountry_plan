@@ -202,7 +202,7 @@ class ProblemSummary extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(problem.size.toString()),
-                        Text('Likelihood')
+                        Text('Size'),
                       ],
                     ),
                   ),
@@ -277,30 +277,27 @@ class AspectElevationPainter extends CustomPainter {
       var startAspectAngle = aspectStartAngles[activeAspect];
       var endAspectAngle = startAspectAngle + angle;
 
-      //stderr.writeln('Start angle ${startAspectAngle.toString()}');
-      //stderr.writeln('End angle ${endAspectAngle.toString()}');
-
-      double originX, originY, finishX, finishY, shadeRadius;
+      double innerStartX, innerStartY, innerEndX, innerEndY, shadeRadius;
 
       // Find start/end inner points
       if (elevation.elevations.contains(ElevationType.aboveTreeline)) {
-        originX = center.dx;
-        originY = center.dy;
+        innerStartX = center.dx;
+        innerStartY = center.dy;
 
-        finishX = center.dx;
-        finishY = center.dy;
+        innerEndX = center.dx;
+        innerEndY = center.dy;
       } else if (elevation.elevations.contains(ElevationType.nearTreeline)) {
-        originX = innerRadius * math.cos(startAspectAngle) + center.dx;
-        originY = innerRadius * math.sin(startAspectAngle) + center.dy;
+        innerStartX = innerRadius * math.cos(startAspectAngle) + center.dx;
+        innerStartY = innerRadius * math.sin(startAspectAngle) + center.dy;
 
-        finishX = innerRadius * math.cos(endAspectAngle) + center.dx;
-        finishY = innerRadius * math.sin(endAspectAngle) + center.dy;
+        innerEndX = innerRadius * math.cos(endAspectAngle) + center.dx;
+        innerEndY = innerRadius * math.sin(endAspectAngle) + center.dy;
       } else if (elevation.elevations.contains(ElevationType.belowTreeline)) {
-        originX = middleRadius * math.cos(startAspectAngle) + center.dx;
-        originY = middleRadius * math.sin(startAspectAngle) + center.dy;
+        innerStartX = middleRadius * math.cos(startAspectAngle) + center.dx;
+        innerStartY = middleRadius * math.sin(startAspectAngle) + center.dy;
 
-        finishX = middleRadius * math.cos(endAspectAngle) + center.dx;
-        finishY = middleRadius * math.sin(endAspectAngle) + center.dy;
+        innerEndX = middleRadius * math.cos(endAspectAngle) + center.dx;
+        innerEndY = middleRadius * math.sin(endAspectAngle) + center.dy;
       }
 
       // Find radius to use for outer points
@@ -312,16 +309,16 @@ class AspectElevationPainter extends CustomPainter {
         shadeRadius = innerRadius;
       }
 
-      double startX = shadeRadius * math.cos(startAspectAngle) + center.dx;
-      double startY = shadeRadius * math.sin(startAspectAngle) + center.dy;
-      double endX = shadeRadius * math.cos(endAspectAngle) + center.dx;
-      double endY = shadeRadius * math.sin(endAspectAngle) + center.dy;
+      double outerStartX = shadeRadius * math.cos(startAspectAngle) + center.dx;
+      double outerStartY = shadeRadius * math.sin(startAspectAngle) + center.dy;
+      double outerEndX = shadeRadius * math.cos(endAspectAngle) + center.dx;
+      double outerEndY = shadeRadius * math.sin(endAspectAngle) + center.dy;
 
       var path = Path();
-      path.moveTo(originX, originY);
-      path.lineTo(startX, startY);
-      path.lineTo(endX, endY);
-      path.lineTo(finishX, finishY);
+      path.moveTo(innerStartX, innerStartY);
+      path.lineTo(outerStartX, outerStartY);
+      path.lineTo(outerEndX, outerEndY);
+      path.lineTo(innerEndX, innerEndY);
       path.close();
       canvas.drawPath(path, fillPaint);
     }
