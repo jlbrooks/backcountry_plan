@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:backcountry_plan/db.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:intl/intl.dart';
 
 abstract class BaseModel {
   int id;
@@ -64,6 +65,14 @@ abstract class BaseProvider<T extends BaseModel> {
     return maps.map((e) => fromMap(e)).toList();
   }
 
+  String serializeDateTime(DateTime dt) {
+    return dt.toUtc().toIso8601String();
+  }
+
+  DateTime deserializeDateTime(String s) {
+    return DateTime.tryParse(s).toLocal();
+  }
+
   Map<String, dynamic> toMap(T trip);
 
   T fromMap(Map e);
@@ -73,12 +82,14 @@ class TripModelProvider extends BaseProvider<TripModel> {
   static final String _tableName = "backcountry_trip";
   static final String _columnId = "id";
   static final String _columnName = "name";
-  static final List<String> _columns = [_columnId, _columnName];
+  static final String _columnDate = "date";
+  static final List<String> _columns = [_columnId, _columnName, _columnDate];
 
   static final String createStatement = '''
                                         CREATE TABLE $_tableName (
                                           $_columnId INTEGER PRIMARY KEY,
-                                          $_columnName TEXT
+                                          $_columnName TEXT,
+                                          $_columnDate TEXT
                                         )
                                         ''';
 
@@ -95,7 +106,10 @@ class TripModelProvider extends BaseProvider<TripModel> {
   }
 
   Map<String, dynamic> toMap(TripModel trip) {
-    var map = <String, dynamic>{_columnName: trip.name};
+    var map = <String, dynamic>{
+      _columnName: trip.name,
+      _columnDate: serializeDateTime(trip.date),
+    };
 
     if (trip.id != null) {
       map[_columnId] = trip.id;
@@ -108,16 +122,22 @@ class TripModelProvider extends BaseProvider<TripModel> {
     return TripModel(
       id: e[_columnId],
       name: e[_columnName],
+      date: deserializeDateTime(e[_columnDate]),
     );
   }
 }
 
 class TripModel extends BaseModel {
   String name;
+  DateTime date;
   int planId;
   PlanModel plan;
 
-  TripModel({id, this.name, this.planId, this.plan}) : super(id: id);
+  String friendlyDate() {
+    return DateFormat.yMMMd().format(date);
+  }
+
+  TripModel({id, this.name, this.date, this.planId, this.plan}) : super(id: id);
 }
 
 class PlanModel extends BaseModel {

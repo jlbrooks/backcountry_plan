@@ -112,6 +112,7 @@ class TripListItem extends StatelessWidget {
     return Card(
       child: ListTile(
         title: Text(trip.name),
+        subtitle: Text(trip.friendlyDate()),
         trailing: Icon(Icons.chevron_right),
         onTap: () {
           onTapped(context, trip);
@@ -136,9 +137,36 @@ class CreateTripPage extends StatelessWidget {
   }
 }
 
-class CreateTripForm extends StatelessWidget {
+class CreateTripForm extends StatefulWidget {
+  CreateTripForm({Key key}) : super(key: key);
+
+  @override
+  _CreateTripFormState createState() => _CreateTripFormState();
+}
+
+class _CreateTripFormState extends State<CreateTripForm> {
   final _formKey = GlobalKey<FormState>();
+  DateTime tripDate;
   final TextEditingController tripNameTextController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    tripDate = DateTime.now();
+  }
+
+  _showDatePicker(BuildContext context) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: tripDate,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    setState(() {
+      tripDate = picked;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,13 +191,17 @@ class CreateTripForm extends StatelessWidget {
               return null;
             },
           ),
+          ElevatedButton(
+            onPressed: () => _showDatePicker(context),
+            child: Text('Date'),
+          ),
           SizedBox(height: 24),
           Center(
             child: ElevatedButton(
               onPressed: () {
                 if (_formKey.currentState.validate()) {
                   var name = tripNameTextController.text;
-                  var trip = TripModel(name: name);
+                  var trip = TripModel(name: name, date: tripDate);
                   Navigator.pop(context, trip);
                 }
               },
