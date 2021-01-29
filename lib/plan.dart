@@ -277,18 +277,51 @@ class AspectElevationPainter extends CustomPainter {
       var startAspectAngle = aspectStartAngles[activeAspect];
       var endAspectAngle = startAspectAngle + angle;
 
-      stderr.writeln('Start angle ${startAspectAngle.toString()}');
-      stderr.writeln('End angle ${endAspectAngle.toString()}');
+      //stderr.writeln('Start angle ${startAspectAngle.toString()}');
+      //stderr.writeln('End angle ${endAspectAngle.toString()}');
 
-      double startX = outerRadius * math.cos(startAspectAngle) + center.dx;
-      double startY = outerRadius * math.sin(startAspectAngle) + center.dy;
-      double endX = outerRadius * math.cos(endAspectAngle) + center.dx;
-      double endY = outerRadius * math.sin(endAspectAngle) + center.dy;
+      double originX, originY, finishX, finishY, shadeRadius;
+
+      // Find start/end inner points
+      if (elevation.elevations.contains(ElevationType.aboveTreeline)) {
+        originX = center.dx;
+        originY = center.dy;
+
+        finishX = center.dx;
+        finishY = center.dy;
+      } else if (elevation.elevations.contains(ElevationType.nearTreeline)) {
+        originX = innerRadius * math.cos(startAspectAngle) + center.dx;
+        originY = innerRadius * math.sin(startAspectAngle) + center.dy;
+
+        finishX = innerRadius * math.cos(endAspectAngle) + center.dx;
+        finishY = innerRadius * math.sin(endAspectAngle) + center.dy;
+      } else if (elevation.elevations.contains(ElevationType.belowTreeline)) {
+        originX = middleRadius * math.cos(startAspectAngle) + center.dx;
+        originY = middleRadius * math.sin(startAspectAngle) + center.dy;
+
+        finishX = middleRadius * math.cos(endAspectAngle) + center.dx;
+        finishY = middleRadius * math.sin(endAspectAngle) + center.dy;
+      }
+
+      // Find radius to use for outer points
+      if (elevation.elevations.contains(ElevationType.belowTreeline)) {
+        shadeRadius = outerRadius;
+      } else if (elevation.elevations.contains(ElevationType.nearTreeline)) {
+        shadeRadius = middleRadius;
+      } else if (elevation.elevations.contains(ElevationType.aboveTreeline)) {
+        shadeRadius = innerRadius;
+      }
+
+      double startX = shadeRadius * math.cos(startAspectAngle) + center.dx;
+      double startY = shadeRadius * math.sin(startAspectAngle) + center.dy;
+      double endX = shadeRadius * math.cos(endAspectAngle) + center.dx;
+      double endY = shadeRadius * math.sin(endAspectAngle) + center.dy;
 
       var path = Path();
-      path.moveTo(center.dx, center.dy);
+      path.moveTo(originX, originY);
       path.lineTo(startX, startY);
       path.lineTo(endX, endY);
+      path.lineTo(finishX, finishY);
       path.close();
       canvas.drawPath(path, fillPaint);
     }
