@@ -113,46 +113,48 @@ class PlanPageState extends State<PlanPage> {
           )
         ],
       ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextFormField(
-                controller: keyMessageController,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: 'Key message',
-                  hintText: 'Key message for the day',
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                TextFormField(
+                  controller: keyMessageController,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: 'Key message',
+                    hintText: 'Key message for the day',
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                 ),
-                keyboardType: TextInputType.multiline,
-                maxLines: null,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: forecastController,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  border: const OutlineInputBorder(),
-                  labelText: 'Weather factors',
-                  hintText: 'Current and forecast weather factors',
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: forecastController,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(
+                    border: const OutlineInputBorder(),
+                    labelText: 'Weather factors',
+                    hintText: 'Current and forecast weather factors',
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  minLines: 3,
+                  maxLines: null,
                 ),
-                keyboardType: TextInputType.multiline,
-                minLines: 3,
-                maxLines: null,
-              ),
-              const SizedBox(height: 20),
-              SectionText(text: "Problems:"),
-              ...problemTiles,
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () => _onAddProblem(context),
-                child: Text('Add problem'),
-              ),
-            ],
+                const SizedBox(height: 20),
+                SectionText(text: "Problems:"),
+                ...problemTiles,
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () => _onAddProblem(context),
+                  child: Text('Add problem'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
