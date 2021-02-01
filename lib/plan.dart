@@ -42,7 +42,7 @@ class PlanPageState extends State<PlanPage> {
   }
 
   _onAddProblem(BuildContext context) async {
-    var problem = AvalancheProblemModel(planId: plan.id);
+    var problem = AvalancheProblemModel.newForPlan(plan.id);
     final result = await Navigator.push<AvalancheProblemModel>(
       context,
       MaterialPageRoute(builder: (context) {

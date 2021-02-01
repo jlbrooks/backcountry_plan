@@ -285,12 +285,14 @@ class ProblemLikelihood {
 
   LikelihoodType likelihood;
 
-  ProblemLikelihood({likelihood})
-      : this.likelihood = likelihood ?? LikelihoodType.unlikely;
+  ProblemLikelihood.fromLikelihood(this.likelihood);
+
+  ProblemLikelihood() : this.likelihood = LikelihoodType.unlikely;
 
   static ProblemLikelihood deserialize(String s) {
     if (s.isNotEmpty) {
-      return ProblemLikelihood(likelihood: LikelihoodType.values[int.parse(s)]);
+      return ProblemLikelihood.fromLikelihood(
+          LikelihoodType.values[int.parse(s)]);
     }
 
     return ProblemLikelihood();
@@ -327,20 +329,20 @@ class ProblemElevation {
       activeElevations.keys.where((e) => activeElevations[e]).toList();
   Map<ElevationType, bool> activeElevations;
 
-  ProblemElevation({List<ElevationType> activeElevationList})
-      : this.activeElevations = (activeElevationList == null)
-            ? defaultActiveElevations()
-            : parseList(activeElevationList);
+  ProblemElevation() : this.activeElevations = _defaultActiveElevations();
+
+  ProblemElevation.fromList(List<ElevationType> activeElevationList)
+      : this.activeElevations = parseList(activeElevationList);
 
   static Map<ElevationType, bool> parseList(List<ElevationType> l) {
-    var map = defaultActiveElevations();
+    var map = _defaultActiveElevations();
     for (var e in l) {
       map[e] = true;
     }
     return map;
   }
 
-  static Map<ElevationType, bool> defaultActiveElevations() {
+  static Map<ElevationType, bool> _defaultActiveElevations() {
     return Map.fromIterables(
       ElevationType.values,
       ElevationType.values.map((e) => false),
@@ -349,11 +351,8 @@ class ProblemElevation {
 
   static ProblemElevation deserialize(String s) {
     if (s.isNotEmpty) {
-      return ProblemElevation(
-          activeElevationList: s
-              .split(',')
-              .map((e) => ElevationType.values[int.parse(e)])
-              .toList());
+      return ProblemElevation.fromList(
+          s.split(',').map((e) => ElevationType.values[int.parse(e)]).toList());
     }
 
     return ProblemElevation();
@@ -414,10 +413,10 @@ class ProblemAspect {
       activeAspects.keys.where((e) => activeAspects[e]).toList();
   Map<AspectType, bool> activeAspects;
 
-  ProblemAspect({List<AspectType> activeAspectList})
-      : this.activeAspects = (activeAspectList == null)
-            ? defaultActiveAspects()
-            : parseList(activeAspectList);
+  ProblemAspect.fromList(List<AspectType> activeAspectList)
+      : this.activeAspects = parseList(activeAspectList);
+
+  ProblemAspect() : this.activeAspects = defaultActiveAspects();
 
   static Map<AspectType, bool> parseList(List<AspectType> l) {
     var map = defaultActiveAspects();
@@ -436,11 +435,8 @@ class ProblemAspect {
 
   static ProblemAspect deserialize(String s) {
     if (s.isNotEmpty) {
-      return ProblemAspect(
-          activeAspectList: s
-              .split(',')
-              .map((e) => AspectType.values[int.parse(e)])
-              .toList());
+      return ProblemAspect.fromList(
+          s.split(',').map((e) => AspectType.values[int.parse(e)]).toList());
     }
 
     return ProblemAspect();
@@ -486,7 +482,7 @@ class AvalancheProblemModel extends BaseModel {
   AvalancheProblemModel(
       {id,
       this.problemType,
-      size,
+      AvalancheProblemSize size,
       elevation,
       aspect,
       likelihood,
@@ -499,6 +495,17 @@ class AvalancheProblemModel extends BaseModel {
         this.aspect = aspect ?? ProblemAspect(),
         this.likelihood = likelihood ?? ProblemLikelihood(),
         super(id: id);
+
+  AvalancheProblemModel.newForPlan(int planId)
+      : this.problemType = 'Dry loose',
+        this.size = AvalancheProblemSize(),
+        this.elevation = ProblemElevation(),
+        this.aspect = ProblemAspect(),
+        this.likelihood = ProblemLikelihood(),
+        this.terrainFeatures = "",
+        this.dangerTrendTiming = "",
+        this.notes = "",
+        this.planId = planId;
 }
 
 class AvalancheProblemModelProvider
