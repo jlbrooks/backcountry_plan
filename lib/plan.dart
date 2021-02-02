@@ -87,17 +87,7 @@ class PlanPageState extends State<PlanPage> {
   @override
   Widget build(BuildContext context) {
     var problemTiles = problems.map((p) {
-      return Column(
-        children: [
-          ProblemSummary(problem: p),
-          ListTile(
-            title: Text(p.problemType.toString()),
-            subtitle: Text(p.size.toString()),
-            trailing: Icon(Icons.chevron_right),
-            onTap: () => _onEditProblem(context, p),
-          ),
-        ],
-      );
+      return ProblemSummary(problem: p, onEditProblem: _onEditProblem);
     });
 
     return Scaffold(
@@ -164,53 +154,59 @@ class PlanPageState extends State<PlanPage> {
 
 class ProblemSummary extends StatelessWidget {
   final AvalancheProblemModel problem;
+  final Function(BuildContext, AvalancheProblemModel) onEditProblem;
 
-  const ProblemSummary({Key key, @required this.problem}) : super(key: key);
+  const ProblemSummary(
+      {Key key, @required this.problem, @required this.onEditProblem})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Center(
-                child: Text(
-                  problem.problemType.toString(),
-                  style: TextStyle(fontSize: 24),
+      child: InkWell(
+        onTap: () => onEditProblem(context, problem),
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Center(
+                  child: Text(
+                    problem.problemType.toString(),
+                    style: TextStyle(fontSize: 24),
+                  ),
                 ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Text(problem.likelihood.likelihood.toName()),
-                        Text('Likelihood')
-                      ],
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(problem.likelihood.likelihood.toName()),
+                          Text('Likelihood')
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        AspectElevationDiagram(problem: problem),
-                        Text('Aspect/elevation')
-                      ],
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        children: [
+                          AspectElevationDiagram(problem: problem),
+                          Text('Aspect/elevation')
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        Text(problem.size.toString()),
-                        Text('Size'),
-                      ],
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(problem.size.toString()),
+                          Text('Size'),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              )
-            ],
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
