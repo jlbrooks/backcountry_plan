@@ -91,7 +91,7 @@ class PlanPageState extends State<PlanPage> {
         children: [
           ProblemSummary(problem: p),
           ListTile(
-            title: Text(p.problemType),
+            title: Text(p.problemType.toString()),
             subtitle: Text(p.size.toString()),
             trailing: Icon(Icons.chevron_right),
             onTap: () => _onEditProblem(context, p),
@@ -177,7 +177,7 @@ class ProblemSummary extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  problem.problemType,
+                  problem.problemType.toString(),
                   style: TextStyle(fontSize: 24),
                 ),
               ),

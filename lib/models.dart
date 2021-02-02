@@ -455,20 +455,66 @@ class ProblemAspect {
   }
 }
 
-class AvalancheProblemModel extends BaseModel {
-  static final List<String> problemTypes = [
-    'Dry loose',
-    'Storm slab',
-    'Wind slab',
-    'Cornice avalanche',
-    'Wet loose',
-    'Wet slab',
-    'Persistent slab',
-    'Deep slab',
-    'Glide avalanche'
-  ];
+enum ProblemType {
+  dryLoose,
+  stormSlab,
+  windSlab,
+  cornice,
+  wetLoose,
+  wetSlab,
+  persistentSlab,
+  deepSlab,
+  glide
+}
 
-  String problemType;
+extension ProblemTypeHelpers on ProblemType {
+  String toName() => AvalancheProblemType.problemTypeNames[this];
+}
+
+class AvalancheProblemType {
+  static final Map<ProblemType, String> problemTypeNames = {
+    ProblemType.dryLoose: 'Dry loose',
+    ProblemType.stormSlab: 'Storm slab',
+    ProblemType.windSlab: 'Wind slab',
+    ProblemType.cornice: 'Cornice avalanche',
+    ProblemType.wetLoose: 'Wet loose',
+    ProblemType.wetSlab: 'Wet slab',
+    ProblemType.persistentSlab: 'Persistent slab',
+    ProblemType.deepSlab: 'Deep slab',
+    ProblemType.glide: 'Glide avalanche'
+  };
+
+  ProblemType type;
+
+  AvalancheProblemType.fromLikelihood(this.type);
+
+  AvalancheProblemType() : this.type = ProblemType.dryLoose;
+
+  static AvalancheProblemType deserialize(String s) {
+    if (s.isNotEmpty) {
+      return AvalancheProblemType.fromLikelihood(
+          ProblemType.values[int.parse(s)]);
+    }
+
+    return AvalancheProblemType();
+  }
+
+  String serialize() {
+    return type.index.toString();
+  }
+
+  void set(ProblemType value) {
+    type = value;
+  }
+
+  @override
+  String toString() {
+    return type.toName();
+  }
+}
+
+class AvalancheProblemModel extends BaseModel {
+  AvalancheProblemType problemType;
   AvalancheProblemSize size;
   ProblemElevation elevation;
   ProblemAspect aspect;
@@ -481,23 +527,24 @@ class AvalancheProblemModel extends BaseModel {
 
   AvalancheProblemModel(
       {id,
-      this.problemType,
+      AvalancheProblemType problemType,
       AvalancheProblemSize size,
-      elevation,
-      aspect,
-      likelihood,
+      ProblemElevation elevation,
+      ProblemAspect aspect,
+      ProblemLikelihood likelihood,
       this.terrainFeatures,
       this.dangerTrendTiming,
       this.notes,
       this.planId})
-      : this.size = size ?? AvalancheProblemSize(),
+      : this.problemType = problemType ?? AvalancheProblemType(),
+        this.size = size ?? AvalancheProblemSize(),
         this.elevation = elevation ?? ProblemElevation(),
         this.aspect = aspect ?? ProblemAspect(),
         this.likelihood = likelihood ?? ProblemLikelihood(),
         super(id: id);
 
   AvalancheProblemModel.newForPlan(int planId)
-      : this.problemType = 'Dry loose',
+      : this.problemType = AvalancheProblemType(),
         this.size = AvalancheProblemSize(),
         this.elevation = ProblemElevation(),
         this.aspect = ProblemAspect(),
@@ -567,7 +614,7 @@ class AvalancheProblemModelProvider
   Map<String, dynamic> toMap(AvalancheProblemModel problem) {
     var map = <String, dynamic>{
       _columnPlanId: problem.planId,
-      _columnProblemType: problem.problemType,
+      _columnProblemType: problem.problemType.serialize(),
       _columnSize: problem.size.serialize(),
       _columnElevation: problem.elevation.serialize(),
       _columnAspect: problem.aspect.serialize(),
@@ -587,7 +634,7 @@ class AvalancheProblemModelProvider
   AvalancheProblemModel fromMap(Map e) {
     return AvalancheProblemModel(
       id: e[_columnId],
-      problemType: e[_columnProblemType],
+      problemType: AvalancheProblemType.deserialize(e[_columnProblemType]),
       size: AvalancheProblemSize.deserialize(e[_columnSize]),
       elevation: ProblemElevation.deserialize(e[_columnElevation]),
       aspect: ProblemAspect.deserialize(e[_columnAspect]),

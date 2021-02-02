@@ -54,14 +54,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 SectionText(text: "Problem type:"),
-                ProblemTypeInput(
-                  problemType: problem.problemType,
-                  onValueChanged: (newValue) {
-                    setState(() {
-                      problem.problemType = newValue;
-                    });
-                  },
-                ),
+                ProblemTypeInput(problemType: problem.problemType),
                 const SizedBox(height: 20),
                 SectionText(text: "Problem size:"),
                 const SizedBox(height: 10),
@@ -267,18 +260,21 @@ class ProblemSizeInput extends StatelessWidget {
   }
 }
 
-class ProblemTypeInput extends StatelessWidget {
-  final String problemType;
-  final Function(String) onValueChanged;
-  const ProblemTypeInput(
-      {Key key, @required this.problemType, @required this.onValueChanged})
+class ProblemTypeInput extends StatefulWidget {
+  final AvalancheProblemType problemType;
+  const ProblemTypeInput({Key key, @required this.problemType})
       : super(key: key);
 
   @override
+  _ProblemTypeInputState createState() => _ProblemTypeInputState();
+}
+
+class _ProblemTypeInputState extends State<ProblemTypeInput> {
+  @override
   Widget build(BuildContext context) {
     return Container(
-      child: DropdownButton<String>(
-        value: problemType,
+      child: DropdownButton<ProblemType>(
+        value: widget.problemType.type,
         hint: Text('Problem type'),
         icon: Icon(Icons.arrow_downward),
         iconSize: 24,
@@ -288,12 +284,16 @@ class ProblemTypeInput extends StatelessWidget {
           height: 2,
           color: Colors.deepPurpleAccent,
         ),
-        onChanged: (String newValue) => onValueChanged(newValue),
-        items: AvalancheProblemModel.problemTypes
-            .map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
+        onChanged: (ProblemType newValue) {
+          setState(() {
+            widget.problemType.set(newValue);
+          });
+        },
+        items: ProblemType.values
+            .map<DropdownMenuItem<ProblemType>>((ProblemType value) {
+          return DropdownMenuItem<ProblemType>(
             value: value,
-            child: Text(value),
+            child: Text(value.toName()),
           );
         }).toList(),
       ),
