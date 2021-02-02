@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'dart:math' as math;
 
-import 'package:backcountry_plan/models.dart';
+import 'package:backcountry_plan/models/plan.dart';
+import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/problem.dart';
 import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';

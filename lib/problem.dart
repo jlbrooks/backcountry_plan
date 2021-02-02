@@ -1,4 +1,4 @@
-import 'package:backcountry_plan/models.dart';
+import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';
 

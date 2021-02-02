@@ -1,5 +1,7 @@
 import 'dart:io';
-import 'package:backcountry_plan/models.dart';
+import 'package:backcountry_plan/models/trip.dart';
+import 'package:backcountry_plan/models/plan.dart';
+import 'package:backcountry_plan/models/problem.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 

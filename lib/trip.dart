@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:backcountry_plan/models.dart';
+import 'package:backcountry_plan/models/trip.dart';
+import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/plan.dart';
 import 'package:flutter/material.dart';
 
