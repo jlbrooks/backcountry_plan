@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:backcountry_plan/db.dart';
 import 'package:backcountry_plan/models/base.dart';
@@ -9,7 +10,7 @@ class TerrainPlanModel extends BaseModel {
   String areasToAvoid;
   String route;
   String turnaroundPoint;
-  DateTime turnaroundTime;
+  TimeOfDay turnaroundTime;
   int planId;
 
   TerrainPlanModel(
@@ -27,12 +28,12 @@ class TerrainPlanModel extends BaseModel {
         this.areasToAvoid = "",
         this.route = "",
         this.turnaroundPoint = "",
-        this.turnaroundTime = DateTime.now(),
+        this.turnaroundTime = TimeOfDay.now(),
         this.planId = planId;
 }
 
 class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
-  static final String terrainPlanTableName = "avalanche_problem";
+  static final String terrainPlanTableName = "terrain_plan";
   static final String terrainPlanColumnId = "id";
   static final String _columnMindset = "mindset";
   static final String _columnAreasToAvoid = "areas_to_avoid";
@@ -84,7 +85,7 @@ class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
       _columnAreasToAvoid: terrainPlan.areasToAvoid,
       _columnRoute: terrainPlan.route,
       _columnTurnaroundPoint: terrainPlan.turnaroundPoint,
-      _columnTurnaroundTime: terrainPlan.turnaroundTime,
+      _columnTurnaroundTime: serializeTimeOfDay(terrainPlan.turnaroundTime),
     };
 
     if (terrainPlan.id != null) {
@@ -101,7 +102,7 @@ class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
       areasToAvoid: e[_columnAreasToAvoid],
       route: e[_columnRoute],
       turnaroundPoint: e[_columnTurnaroundPoint],
-      turnaroundTime: e[_columnTurnaroundTime],
+      turnaroundTime: deserializeTimeOfDay(e[_columnTurnaroundTime]),
       planId: e[_columnPlanId],
     );
   }

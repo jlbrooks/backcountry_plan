@@ -3,8 +3,10 @@ import 'dart:math' as math;
 
 import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/models/problem.dart';
+import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/problem.dart';
 import 'package:backcountry_plan/common.dart';
+import 'package:backcountry_plan/terrainPlan.dart';
 import 'package:flutter/material.dart';
 
 class PlanPage extends StatefulWidget {
@@ -22,6 +24,7 @@ class PlanPageState extends State<PlanPage> {
   final TextEditingController forecastController = TextEditingController();
   final PlanModel plan;
   List<AvalancheProblemModel> problems = [];
+  TerrainPlanModel terrainPlan;
 
   PlanPageState({@required this.plan}) : super();
 
@@ -36,6 +39,20 @@ class PlanPageState extends State<PlanPage> {
     AvalancheProblemModelProvider().getByPlanId(plan.id).then((_problems) {
       setState(() {
         problems = _problems;
+      });
+    });
+
+    TerrainPlanModelProvider().getByPlanId(plan.id).then((_plans) {
+      setState(() {
+        if (_plans.isNotEmpty) {
+          if (_plans.length > 1) {
+            stderr.writeln("More than 1 plan found");
+          }
+
+          terrainPlan = _plans[0];
+        } else {
+          terrainPlan = TerrainPlanModel.newForPlan(plan.id);
+        }
       });
     });
 
@@ -71,6 +88,22 @@ class PlanPageState extends State<PlanPage> {
       AvalancheProblemModelProvider().save(result);
       setState(() {
         problems[problems.indexOf(result)] = result;
+      });
+    }
+  }
+
+  _onEditTerrainPlan(TerrainPlanModel terrainPlan) async {
+    final result = await Navigator.push<TerrainPlanModel>(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return TerrainPlanEditPage(terrainPlan: terrainPlan);
+      }),
+    );
+
+    if (result != null) {
+      TerrainPlanModelProvider().save(result);
+      setState(() {
+        terrainPlan = result;
       });
     }
   }
@@ -137,12 +170,18 @@ class PlanPageState extends State<PlanPage> {
                   maxLines: null,
                 ),
                 const SizedBox(height: 20),
-                SectionText(text: "Problems:"),
+                SectionText(text: "Problems"),
                 ...problemTiles,
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () => _onAddProblem(context),
                   child: Text('Add problem'),
+                ),
+                const SizedBox(height: 20),
+                SectionText(text: "Plan to manage terrain"),
+                TerrainPlanSummary(
+                  plan: terrainPlan,
+                  onTap: _onEditTerrainPlan,
                 ),
               ],
             ),

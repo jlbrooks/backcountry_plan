@@ -1,5 +1,6 @@
 import 'dart:core';
 import 'package:backcountry_plan/db.dart';
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class BaseModel {
@@ -69,6 +70,15 @@ abstract class BaseProvider<T extends BaseModel> {
 
   DateTime deserializeDateTime(String s) {
     return DateTime.tryParse(s).toLocal();
+  }
+
+  String serializeTimeOfDay(TimeOfDay td) {
+    return "${td.hour}:${td.minute}";
+  }
+
+  TimeOfDay deserializeTimeOfDay(String s) {
+    var split = s.split(":");
+    return TimeOfDay(hour: int.parse(split[0]), minute: int.parse(split[1]));
   }
 
   Map<String, dynamic> toMap(T trip);
