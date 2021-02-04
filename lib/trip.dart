@@ -4,6 +4,7 @@ import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/plan.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TripListPage extends StatefulWidget {
   TripListPage({Key key}) : super(key: key);
@@ -192,9 +193,22 @@ class _CreateTripFormState extends State<CreateTripForm> {
               return null;
             },
           ),
-          ElevatedButton(
-            onPressed: () => _showDatePicker(context),
-            child: Text('Date'),
+          Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  DateFormat.yMMMd().format(tripDate),
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => _showDatePicker(context),
+                  child: Text('Change date'),
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 24),
           Center(
