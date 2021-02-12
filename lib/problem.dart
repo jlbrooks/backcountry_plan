@@ -126,20 +126,17 @@ class ProblemEditPageState extends State<ProblemEditPage> {
 
 class ProblemLikelihoodInput extends StatefulWidget {
   final ProblemLikelihood likelihood;
+  final bool isEnabled;
 
-  ProblemLikelihoodInput({Key key, @required this.likelihood})
+  ProblemLikelihoodInput(
+      {Key key, @required this.likelihood, this.isEnabled = true})
       : super(key: key);
 
   @override
-  _ProblemLikelihoodInputState createState() =>
-      _ProblemLikelihoodInputState(likelihood: likelihood);
+  _ProblemLikelihoodInputState createState() => _ProblemLikelihoodInputState();
 }
 
 class _ProblemLikelihoodInputState extends State<ProblemLikelihoodInput> {
-  final ProblemLikelihood likelihood;
-
-  _ProblemLikelihoodInputState({@required this.likelihood});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -160,15 +157,17 @@ class _ProblemLikelihoodInputState extends State<ProblemLikelihoodInput> {
             ),
           ),
           child: Slider(
-            value: likelihood.likelihood.index.toDouble(),
+            value: widget.likelihood.likelihood.index.toDouble(),
             min: 0,
             max: (LikelihoodType.values.length - 1).toDouble(),
             divisions: (LikelihoodType.values.length - 1),
-            label: likelihood.likelihood.toName(),
+            label: widget.likelihood.likelihood.toName(),
             onChanged: (value) {
-              setState(() {
-                likelihood.set(LikelihoodType.values[value.round()]);
-              });
+              if (widget.isEnabled) {
+                setState(() {
+                  widget.likelihood.set(LikelihoodType.values[value.round()]);
+                });
+              }
             },
           ),
         ),

@@ -221,7 +221,10 @@ class ProblemSummary extends StatelessWidget {
                     Expanded(
                       child: Column(
                         children: [
-                          Text(problem.likelihood.likelihood.toName()),
+                          ProblemLikelihoodInput(
+                            likelihood: problem.likelihood,
+                            isEnabled: false,
+                          ),
                           Text('Likelihood')
                         ],
                       ),
