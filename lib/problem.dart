@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:math' as math;
+
 import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';
@@ -140,19 +143,160 @@ class _ProblemLikelihoodInputState extends State<ProblemLikelihoodInput> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Slider(
-        value: likelihood.likelihood.index.toDouble(),
-        min: 0,
-        max: (LikelihoodType.values.length - 1).toDouble(),
-        divisions: (LikelihoodType.values.length - 1),
-        label: likelihood.likelihood.toName(),
-        onChanged: (value) {
-          setState(() {
-            likelihood.set(LikelihoodType.values[value.round()]);
-          });
-        },
+      child: RotatedBox(
+        quarterTurns: 3,
+        child: SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            showValueIndicator: ShowValueIndicator.never,
+            activeTrackColor: Colors.grey.shade400,
+            inactiveTrackColor: Colors.grey.shade200,
+            activeTickMarkColor: Colors.grey,
+            thumbColor: Colors.black,
+            tickMarkShape: LineSliderTickShape(width: 10),
+            thumbShape: LineSliderThumbPoint(
+              width: 20,
+              valueStrings:
+                  LikelihoodType.values.map((e) => e.toName()).toList(),
+            ),
+          ),
+          child: Slider(
+            value: likelihood.likelihood.index.toDouble(),
+            min: 0,
+            max: (LikelihoodType.values.length - 1).toDouble(),
+            divisions: (LikelihoodType.values.length - 1),
+            label: likelihood.likelihood.toName(),
+            onChanged: (value) {
+              setState(() {
+                likelihood.set(LikelihoodType.values[value.round()]);
+              });
+            },
+          ),
+        ),
       ),
     );
+  }
+}
+
+class LineSliderTickShape extends SliderTickMarkShape {
+  final double width;
+
+  const LineSliderTickShape({@required this.width});
+
+  @override
+  Size getPreferredSize({
+    @required SliderThemeData sliderTheme,
+    bool isEnabled = false,
+  }) {
+    return Size.fromWidth(width);
+  }
+
+  @override
+  void paint(PaintingContext context, Offset center,
+      {Animation<double> activationAnimation,
+      @required RenderBox parentBox,
+      @required SliderThemeData sliderTheme,
+      @required Animation<double> enableAnimation,
+      @required TextDirection textDirection,
+      @required Offset thumbCenter,
+      bool isEnabled = false}) {
+    final Canvas canvas = context.canvas;
+
+    /* Paint the line */
+    final paint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final startX = center.dx;
+    final startY = center.dy - (width / 2);
+    final endX = center.dx;
+    final endY = center.dy + (width / 2);
+    var path = Path();
+    path.moveTo(startX, startY);
+    path.lineTo(endX, endY);
+    canvas.drawPath(path, paint);
+  }
+}
+
+class LineSliderThumbPoint extends SliderComponentShape {
+  final double min;
+  final double max;
+  final double width;
+  final List<String> valueStrings;
+
+  const LineSliderThumbPoint({
+    @required this.width,
+    @required this.valueStrings,
+    this.min = 0,
+    this.max = 4,
+  });
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) {
+    return Size.fromWidth(width);
+  }
+
+  @override
+  void paint(PaintingContext context, Offset center,
+      {Animation<double> activationAnimation,
+      Animation<double> enableAnimation,
+      bool isDiscrete,
+      TextPainter labelPainter,
+      RenderBox parentBox,
+      SliderThemeData sliderTheme,
+      TextDirection textDirection,
+      double value,
+      double textScaleFactor,
+      Size sizeWithOverflow}) {
+    //stderr.writeln('${value}');
+    final Canvas canvas = context.canvas;
+
+    /* Paint the line */
+    final paint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final startX = center.dx;
+    final startY = center.dy - (width / 2);
+    final endX = center.dx;
+    final endY = center.dy + (width / 2);
+    var path = Path();
+    path.moveTo(startX, startY);
+    path.lineTo(endX, endY);
+    canvas.drawPath(path, paint);
+
+    //canvas.drawCircle(center, 2, paint);
+
+    /* Paint the text */
+    TextSpan span = TextSpan(
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w700,
+        color: sliderTheme.thumbColor,
+      ),
+      text: getValueString(value),
+    );
+
+    TextPainter tp = new TextPainter(
+        text: span,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr);
+    tp.layout();
+    Offset textCenter = Offset(center.dx + (tp.height / 2), center.dy + width);
+
+    canvas.save();
+    canvas.translate(textCenter.dx, textCenter.dy);
+    canvas.rotate(1 / 2 * math.pi);
+
+    tp.paint(canvas, new Offset(0.0, 0.0));
+    canvas.restore();
+  }
+
+  String getValueString(double value) {
+    return valueStrings[(min + (max - min) * value).round()];
   }
 }
 
