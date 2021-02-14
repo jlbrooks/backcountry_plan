@@ -14,6 +14,10 @@ class TripModel extends BaseModel {
   }
 
   TripModel({id, this.name, this.date, this.planId, this.plan}) : super(id: id);
+
+  TripModel.create()
+      : this.name = '',
+        this.date = DateTime.now();
 }
 
 class TripModelProvider extends BaseProvider<TripModel> {

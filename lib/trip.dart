@@ -87,15 +87,15 @@ class TripListViewState extends State<TripListView> {
   }
 
   _onAddTripPressed(BuildContext context) async {
-    final trip = await Navigator.push<TripModel>(
+    final trip = TripModel.create();
+    await Navigator.push<TripModel>(
       context,
       MaterialPageRoute(builder: (context) {
-        return CreateTripPage();
+        return EditTripPage(trip: trip);
       }),
     );
-    if (trip != null) {
-      stderr.writeln("Saving trip ${trip.name}");
-      TripModelProvider().save(trip);
+
+    if (trip.isPersisted()) {
       setState(() {
         trips.add(trip);
       });
@@ -124,106 +124,105 @@ class TripListItem extends StatelessWidget {
   }
 }
 
-class CreateTripPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Edit Plan"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CreateTripForm(),
-      ),
-    );
-  }
-}
-
-class CreateTripForm extends StatefulWidget {
-  CreateTripForm({Key key}) : super(key: key);
+class EditTripPage extends StatefulWidget {
+  final TripModel trip;
+  EditTripPage({Key key, @required this.trip}) : super(key: key);
 
   @override
-  _CreateTripFormState createState() => _CreateTripFormState();
+  _EditTripPageState createState() => _EditTripPageState();
 }
 
-class _CreateTripFormState extends State<CreateTripForm> {
+class _EditTripPageState extends State<EditTripPage> {
   final _formKey = GlobalKey<FormState>();
-  DateTime tripDate;
   final TextEditingController tripNameTextController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-
-    tripDate = DateTime.now();
+    tripNameTextController.text = widget.trip.name;
   }
 
   _showDatePicker(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: tripDate,
+      initialDate: widget.trip.date,
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
     );
-    setState(() {
-      tripDate = picked;
-    });
+    if (picked != null) {
+      setState(() {
+        widget.trip.date = picked;
+      });
+    }
+  }
+
+  _onSave(BuildContext context) async {
+    if (_formKey.currentState.validate()) {
+      widget.trip.name = tripNameTextController.text;
+      await TripModelProvider().save(widget.trip);
+      Navigator.pop(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          TextFormField(
-            controller: tripNameTextController,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              border: const OutlineInputBorder(),
-              labelText: 'Trip name',
-              hintText: 'Where are you headed?',
+    var titleText = widget.trip.isPersisted() ? 'Edit Trip' : 'New Trip';
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(titleText),
+        actions: [
+          TextButton(
+            child: Text(
+              'Save',
+              style: TextStyle(color: Colors.white),
             ),
-            maxLines: 1,
-            validator: (value) {
-              if (value.isEmpty) {
-                return 'Please enter a name';
-              }
-              return null;
-            },
-          ),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  DateFormat.yMMMd().format(tripDate),
-                  style: TextStyle(fontSize: 14),
+            onPressed: () => _onSave(context),
+          )
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              TextFormField(
+                controller: tripNameTextController,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: const InputDecoration(
+                  border: const OutlineInputBorder(),
+                  labelText: 'Trip name',
+                  hintText: 'Where are you headed?',
                 ),
+                maxLines: 1,
+                validator: (value) {
+                  if (value.isEmpty) {
+                    return 'Please enter a name';
+                  }
+                  return null;
+                },
               ),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () => _showDatePicker(context),
-                  child: Text('Change date'),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      DateFormat.yMMMd().format(widget.trip.date),
+                      style: TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => _showDatePicker(context),
+                      child: Text('Change date'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          SizedBox(height: 24),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                if (_formKey.currentState.validate()) {
-                  var name = tripNameTextController.text;
-                  var trip = TripModel(name: name, date: tripDate);
-                  Navigator.pop(context, trip);
-                }
-              },
-              child: Text('Create trip'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -254,11 +253,24 @@ class TripPageState extends State<TripPage> {
     super.initState();
   }
 
+  _onEdit(BuildContext context) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return EditTripPage(trip: trip);
+    }));
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(trip.name),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () => _onEdit(context),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

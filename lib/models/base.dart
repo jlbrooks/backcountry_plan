@@ -1,10 +1,16 @@
 import 'dart:core';
+import 'dart:io';
 import 'package:backcountry_plan/db.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class BaseModel {
   int id;
+
+  bool isPersisted() {
+    stderr.writeln("${this.id}");
+    return (this.id != null);
+  }
 
   BaseModel({this.id});
 }
