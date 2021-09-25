@@ -36,6 +36,7 @@ class PlanPageState extends State<PlanPage> {
     if (plan.forecast.isNotEmpty) {
       forecastController.text = plan.forecast;
     }
+    terrainPlan = TerrainPlanModel.newForPlan(plan.id);
     AvalancheProblemModelProvider().getByPlanId(plan.id).then((_problems) {
       setState(() {
         problems = _problems;
@@ -50,8 +51,6 @@ class PlanPageState extends State<PlanPage> {
           }
 
           terrainPlan = _plans[0];
-        } else {
-          terrainPlan = TerrainPlanModel.newForPlan(plan.id);
         }
       });
     });

@@ -95,6 +95,14 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
   final TextEditingController turnaroundPointController =
       TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    routeController.text = widget.terrainPlan.route;
+    areasToAvoidController.text = widget.terrainPlan.areasToAvoid;
+    turnaroundPointController.text = widget.terrainPlan.turnaroundPoint;
+  }
+
   Future<void> _showTurnaroundTimePicker(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,
