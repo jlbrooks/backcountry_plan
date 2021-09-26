@@ -46,8 +46,7 @@ class AvalancheProblemModel extends BaseModel {
         this.planId = planId;
 }
 
-class AvalancheProblemModelProvider
-    extends BaseProvider<AvalancheProblemModel> {
+class AvalancheProblemModelProvider extends BaseProvider<AvalancheProblemModel> {
   static final String problemTableName = "avalanche_problem";
   static final String problemColumnId = "id";
   static final String _columnProblemType = "problem_type";
@@ -89,8 +88,7 @@ class AvalancheProblemModelProvider
                                         )
                                         ''';
 
-  static final AvalancheProblemModelProvider _singleton =
-      AvalancheProblemModelProvider._internal();
+  static final AvalancheProblemModelProvider _singleton = AvalancheProblemModelProvider._internal();
 
   factory AvalancheProblemModelProvider() {
     return _singleton;
@@ -219,8 +217,7 @@ class ProblemLikelihood {
 
   static ProblemLikelihood deserialize(String s) {
     if (s.isNotEmpty) {
-      return ProblemLikelihood.fromLikelihood(
-          LikelihoodType.values[int.parse(s)]);
+      return ProblemLikelihood.fromLikelihood(LikelihoodType.values[int.parse(s)]);
     }
 
     return ProblemLikelihood();
@@ -253,14 +250,12 @@ class ProblemElevation {
     ElevationType.aboveTreeline: 'Above treeline'
   };
 
-  List<ElevationType> get elevations =>
-      activeElevations.keys.where((e) => activeElevations[e]).toList();
+  List<ElevationType> get elevations => activeElevations.keys.where((e) => activeElevations[e]).toList();
   Map<ElevationType, bool> activeElevations;
 
   ProblemElevation() : this.activeElevations = _defaultActiveElevations();
 
-  ProblemElevation.fromList(List<ElevationType> activeElevationList)
-      : this.activeElevations = parseList(activeElevationList);
+  ProblemElevation.fromList(List<ElevationType> activeElevationList) : this.activeElevations = parseList(activeElevationList);
 
   static Map<ElevationType, bool> parseList(List<ElevationType> l) {
     var map = _defaultActiveElevations();
@@ -279,8 +274,7 @@ class ProblemElevation {
 
   static ProblemElevation deserialize(String s) {
     if (s.isNotEmpty) {
-      return ProblemElevation.fromList(
-          s.split(',').map((e) => ElevationType.values[int.parse(e)]).toList());
+      return ProblemElevation.fromList(s.split(',').map((e) => ElevationType.values[int.parse(e)]).toList());
     }
 
     return ProblemElevation();
@@ -299,16 +293,7 @@ class ProblemElevation {
   }
 }
 
-enum AspectType {
-  north,
-  northEast,
-  east,
-  southEast,
-  south,
-  southWest,
-  west,
-  northWest
-}
+enum AspectType { north, northEast, east, southEast, south, southWest, west, northWest }
 
 extension AspectTypeHelpers on AspectType {
   String toName() => ProblemAspect.problemAspectNames[this];
@@ -326,23 +311,12 @@ class ProblemAspect {
     AspectType.northWest: 'Northwest'
   };
 
-  static final List<String> labels = [
-    'E',
-    'SE',
-    'S',
-    'SW',
-    'W',
-    'NW',
-    'N',
-    'NE'
-  ];
+  static final List<String> labels = ['E', 'SE', 'S', 'SW', 'W', 'NW', 'N', 'NE'];
 
-  List<AspectType> get aspects =>
-      activeAspects.keys.where((e) => activeAspects[e]).toList();
+  List<AspectType> get aspects => activeAspects.keys.where((e) => activeAspects[e]).toList();
   Map<AspectType, bool> activeAspects;
 
-  ProblemAspect.fromList(List<AspectType> activeAspectList)
-      : this.activeAspects = parseList(activeAspectList);
+  ProblemAspect.fromList(List<AspectType> activeAspectList) : this.activeAspects = parseList(activeAspectList);
 
   ProblemAspect() : this.activeAspects = defaultActiveAspects();
 
@@ -363,8 +337,7 @@ class ProblemAspect {
 
   static ProblemAspect deserialize(String s) {
     if (s.isNotEmpty) {
-      return ProblemAspect.fromList(
-          s.split(',').map((e) => AspectType.values[int.parse(e)]).toList());
+      return ProblemAspect.fromList(s.split(',').map((e) => AspectType.values[int.parse(e)]).toList());
     }
 
     return ProblemAspect();
@@ -381,19 +354,35 @@ class ProblemAspect {
   bool isActive(AspectType e) {
     return activeAspects[e];
   }
+
+  bool operator ==(Object other) {
+    print('checking');
+    // if (identical(this, other)) {
+    //   return true;
+    // }
+    print('here');
+
+    if (other is! ProblemAspect) {
+      return false;
+    }
+
+    // ignore: test_types_in_equals
+    ProblemAspect otherAspect = (other as ProblemAspect);
+
+    for (var e in AspectType.values) {
+      if (this.isActive(e) != otherAspect.isActive(e)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @override
+  int get hashCode => this.serialize().hashCode;
 }
 
-enum ProblemType {
-  dryLoose,
-  stormSlab,
-  windSlab,
-  cornice,
-  wetLoose,
-  wetSlab,
-  persistentSlab,
-  deepSlab,
-  glide
-}
+enum ProblemType { dryLoose, stormSlab, windSlab, cornice, wetLoose, wetSlab, persistentSlab, deepSlab, glide }
 
 extension ProblemTypeHelpers on ProblemType {
   String toName() => AvalancheProblemType.problemTypeNames[this];
@@ -420,8 +409,7 @@ class AvalancheProblemType {
 
   static AvalancheProblemType deserialize(String s) {
     if (s.isNotEmpty) {
-      return AvalancheProblemType.fromLikelihood(
-          ProblemType.values[int.parse(s)]);
+      return AvalancheProblemType.fromLikelihood(ProblemType.values[int.parse(s)]);
     }
 
     return AvalancheProblemType();

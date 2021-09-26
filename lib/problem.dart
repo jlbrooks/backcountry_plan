@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';
+import 'package:touchable/touchable.dart';
 
 class ProblemEditPage extends StatefulWidget {
   final AvalancheProblemModel problem;
@@ -16,8 +17,7 @@ class ProblemEditPage extends StatefulWidget {
 
 class ProblemEditPageState extends State<ProblemEditPage> {
   final AvalancheProblemModel problem;
-  final TextEditingController _terrainFeaturesController =
-      TextEditingController();
+  final TextEditingController _terrainFeaturesController = TextEditingController();
   final TextEditingController _dangerTrendController = TextEditingController();
   RangeValues problemSizeValues = RangeValues(0, 4);
 
@@ -28,8 +28,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
     super.initState();
     _terrainFeaturesController.text = problem.terrainFeatures;
     _dangerTrendController.text = problem.dangerTrendTiming;
-    problemSizeValues = RangeValues(
-        problem.size.startSize.toDouble(), problem.size.endSize.toDouble());
+    problemSizeValues = RangeValues(problem.size.startSize.toDouble(), problem.size.endSize.toDouble());
   }
 
   @override
@@ -66,8 +65,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
                   onChanged: (values) {
                     setState(() {
                       problemSizeValues = values;
-                      problem.size
-                          .update(values.start.round(), values.end.round());
+                      problem.size.update(values.start.round(), values.end.round());
                     });
                   },
                 ),
@@ -88,8 +86,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
                   maxLines: 10,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    hintText:
-                        'Which features are of primary concern for this problem?',
+                    hintText: 'Which features are of primary concern for this problem?',
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -128,9 +125,7 @@ class ProblemLikelihoodInput extends StatefulWidget {
   final ProblemLikelihood likelihood;
   final bool isEnabled;
 
-  ProblemLikelihoodInput(
-      {Key key, @required this.likelihood, this.isEnabled = true})
-      : super(key: key);
+  ProblemLikelihoodInput({Key key, @required this.likelihood, this.isEnabled = true}) : super(key: key);
 
   @override
   _ProblemLikelihoodInputState createState() => _ProblemLikelihoodInputState();
@@ -152,8 +147,7 @@ class _ProblemLikelihoodInputState extends State<ProblemLikelihoodInput> {
             tickMarkShape: LineSliderTickShape(width: 10),
             thumbShape: LineSliderThumbPoint(
               width: 20,
-              valueStrings:
-                  LikelihoodType.values.map((e) => e.toName()).toList(),
+              valueStrings: LikelihoodType.values.map((e) => e.toName()).toList(),
             ),
           ),
           child: Slider(
@@ -279,10 +273,7 @@ class LineSliderThumbPoint extends SliderComponentShape {
       text: getValueString(value),
     );
 
-    TextPainter tp = new TextPainter(
-        text: span,
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr);
+    TextPainter tp = new TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
     tp.layout();
     Offset textCenter = Offset(center.dx + (tp.height / 2), center.dy + width);
 
@@ -299,13 +290,46 @@ class LineSliderThumbPoint extends SliderComponentShape {
   }
 }
 
+// class ProblemAspectInput extends StatefulWidget {
+//   final ProblemAspect aspects;
+//   ProblemAspectInput({Key key, @required this.aspects}) : super(key: key);
+
+//   @override
+//   _ProblemAspectInputState createState() =>
+//       _ProblemAspectInputState(aspects: aspects);
+// }
+
+// class _ProblemAspectInputState extends State<ProblemAspectInput> {
+//   final ProblemAspect aspects;
+
+//   _ProblemAspectInputState({@required this.aspects});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       child: Column(
+//         children: AspectType.values
+//             .map((e) => CheckboxListTile(
+//                   title: Text(e.toName()),
+//                   value: aspects.isActive(e),
+//                   onChanged: (value) {
+//                     setState(() {
+//                       aspects.toggle(e);
+//                     });
+//                   },
+//                 ))
+//             .toList(),
+//       ),
+//     );
+//   }
+// }
+
 class ProblemAspectInput extends StatefulWidget {
   final ProblemAspect aspects;
   ProblemAspectInput({Key key, @required this.aspects}) : super(key: key);
 
   @override
-  _ProblemAspectInputState createState() =>
-      _ProblemAspectInputState(aspects: aspects);
+  _ProblemAspectInputState createState() => _ProblemAspectInputState(aspects: aspects);
 }
 
 class _ProblemAspectInputState extends State<ProblemAspectInput> {
@@ -313,24 +337,158 @@ class _ProblemAspectInputState extends State<ProblemAspectInput> {
 
   _ProblemAspectInputState({@required this.aspects});
 
+  _onToggle(AspectType e) {
+    setState(() {
+      aspects.toggle(e);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: AspectType.values
-            .map((e) => CheckboxListTile(
-                  title: Text(e.toName()),
-                  value: aspects.isActive(e),
-                  onChanged: (value) {
-                    setState(() {
-                      aspects.toggle(e);
-                    });
-                  },
-                ))
-            .toList(),
-      ),
+      child: SizedBox(
+          height: 120,
+          child: CanvasTouchDetector(
+            builder: (context) => CustomPaint(
+              painter: AspectSelectorPainter(
+                activeAspects: aspects.aspects,
+                context: context,
+                onToggle: _onToggle,
+              ),
+              child: Container(),
+            ),
+          )),
     );
   }
+}
+
+class AspectSelectorPainter extends CustomPainter {
+  final BuildContext context;
+  final List<AspectType> activeAspects;
+  final Function(AspectType) onToggle;
+  static final int sides = 8;
+  static final double angle = (math.pi * 2) / sides;
+  static final double startAngle = -(angle / 2);
+  static final Map<AspectType, double> aspectStartAngles = {
+    AspectType.east: startAngle,
+    AspectType.southEast: startAngle + (1 * angle),
+    AspectType.south: startAngle + (2 * angle),
+    AspectType.southWest: startAngle + (3 * angle),
+    AspectType.west: startAngle + (4 * angle),
+    AspectType.northWest: startAngle + (5 * angle),
+    AspectType.north: startAngle + (6 * angle),
+    AspectType.northEast: startAngle + (7 * angle),
+  };
+
+  AspectSelectorPainter({this.activeAspects, this.context, this.onToggle});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Offset center = Offset(size.width / 2, size.height / 2);
+    double outerRadius = size.height / 2.5;
+    double angle = ((math.pi * 2) / sides);
+
+    var touchCanvas = TouchyCanvas(context, canvas);
+
+    // Fill it out!
+    var fillPaint = Paint()
+      ..color = Colors.blue.shade300
+      ..strokeWidth = 0
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
+
+    var outlinePaint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    // Fill in active aspects
+    for (final aspect in activeAspects) {
+      var startAspectAngle = aspectStartAngles[aspect];
+      var endAspectAngle = startAspectAngle + angle;
+
+      double outerStartX = outerRadius * math.cos(startAspectAngle) + center.dx;
+      double outerStartY = outerRadius * math.sin(startAspectAngle) + center.dy;
+      double outerEndX = outerRadius * math.cos(endAspectAngle) + center.dx;
+      double outerEndY = outerRadius * math.sin(endAspectAngle) + center.dy;
+
+      var path = Path();
+      path.moveTo(center.dx, center.dy);
+      path.lineTo(outerStartX, outerStartY);
+      path.lineTo(outerEndX, outerEndY);
+      path.lineTo(center.dx, center.dy);
+      path.close();
+      canvas.drawPath(
+        path,
+        fillPaint,
+      );
+    }
+
+    // Draw outline triangles for all aspects, along with touch handling
+    for (final aspect in AspectType.values) {
+      var startAspectAngle = aspectStartAngles[aspect];
+      var endAspectAngle = startAspectAngle + angle;
+
+      double outerStartX = outerRadius * math.cos(startAspectAngle) + center.dx;
+      double outerStartY = outerRadius * math.sin(startAspectAngle) + center.dy;
+      double outerEndX = outerRadius * math.cos(endAspectAngle) + center.dx;
+      double outerEndY = outerRadius * math.sin(endAspectAngle) + center.dy;
+
+      var path = Path();
+      path.moveTo(center.dx, center.dy);
+      path.lineTo(outerStartX, outerStartY);
+      path.lineTo(outerEndX, outerEndY);
+      path.lineTo(center.dx, center.dy);
+      path.close();
+      touchCanvas.drawPath(
+        path,
+        outlinePaint,
+        onTapDown: (tapdetail) {
+          onToggle(aspect);
+        },
+      );
+    }
+
+    // Draw labels
+    double labelRadius = size.height / 2.2;
+
+    for (int i = 0; i < sides; i++) {
+      var angleOffset = (angle * i);
+      double x = labelRadius * math.cos(angleOffset) + center.dx;
+      double y = labelRadius * math.sin(angleOffset) + center.dy;
+      var painter = _labelTextPainter(ProblemAspect.labels[i]);
+      var labelOffset = Offset(x - (painter.width / 2), y - (painter.height / 2));
+      painter.paint(canvas, labelOffset);
+    }
+  }
+
+  TextPainter _labelTextPainter(String label) {
+    final textStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 8,
+    );
+    final textSpan = TextSpan(
+      text: label,
+      style: textStyle,
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(
+      minWidth: 0,
+    );
+
+    return textPainter;
+  }
+
+  @override
+  // TODO: Fix this to correctly compare, comparing the map instance does not work
+  bool shouldRepaint(AspectSelectorPainter oldDelegate) => true;
+
+  @override
+  bool shouldRebuildSemantics(AspectSelectorPainter oldDelegate) => false;
 }
 
 class ProblemElevationInput extends StatefulWidget {
@@ -338,8 +496,7 @@ class ProblemElevationInput extends StatefulWidget {
   ProblemElevationInput({Key key, @required this.elevation}) : super(key: key);
 
   @override
-  _ProblemElevationInputState createState() =>
-      _ProblemElevationInputState(elevation: elevation);
+  _ProblemElevationInputState createState() => _ProblemElevationInputState(elevation: elevation);
 }
 
 class _ProblemElevationInputState extends State<ProblemElevationInput> {
@@ -391,8 +548,7 @@ class ProblemSizeInput extends StatelessWidget {
             max: 4,
             divisions: 4,
             labels: RangeLabels(
-              AvalancheProblemSize
-                  .problemSizes[problemSizeValues.start.round()],
+              AvalancheProblemSize.problemSizes[problemSizeValues.start.round()],
               AvalancheProblemSize.problemSizes[problemSizeValues.end.round()],
             ),
             onChanged: (values) => onChanged(values),
@@ -405,8 +561,7 @@ class ProblemSizeInput extends StatelessWidget {
 
 class ProblemTypeInput extends StatefulWidget {
   final AvalancheProblemType problemType;
-  const ProblemTypeInput({Key key, @required this.problemType})
-      : super(key: key);
+  const ProblemTypeInput({Key key, @required this.problemType}) : super(key: key);
 
   @override
   _ProblemTypeInputState createState() => _ProblemTypeInputState();
@@ -432,8 +587,7 @@ class _ProblemTypeInputState extends State<ProblemTypeInput> {
             widget.problemType.set(newValue);
           });
         },
-        items: ProblemType.values
-            .map<DropdownMenuItem<ProblemType>>((ProblemType value) {
+        items: ProblemType.values.map<DropdownMenuItem<ProblemType>>((ProblemType value) {
           return DropdownMenuItem<ProblemType>(
             value: value,
             child: Text(value.toName()),
