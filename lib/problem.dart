@@ -347,17 +347,18 @@ class _ProblemAspectInputState extends State<ProblemAspectInput> {
   Widget build(BuildContext context) {
     return Container(
       child: SizedBox(
-          height: 120,
-          child: CanvasTouchDetector(
-            builder: (context) => CustomPaint(
-              painter: AspectSelectorPainter(
-                activeAspects: aspects.aspects,
-                context: context,
-                onToggle: _onToggle,
-              ),
-              child: Container(),
+        height: 120,
+        child: CanvasTouchDetector(
+          builder: (context) => CustomPaint(
+            painter: AspectSelectorPainter(
+              activeAspects: aspects.aspects,
+              context: context,
+              onToggle: _onToggle,
             ),
-          )),
+            child: Container(),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -504,24 +505,202 @@ class _ProblemElevationInputState extends State<ProblemElevationInput> {
 
   _ProblemElevationInputState({@required this.elevation});
 
+  _onToggle(ElevationType e) {
+    setState(() {
+      elevation.toggle(e);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(
-        children: ElevationType.values
-            .map((e) => CheckboxListTile(
-                  title: Text(e.toName()),
-                  value: elevation.isActive(e),
-                  onChanged: (value) {
-                    setState(() {
-                      elevation.toggle(e);
-                    });
-                  },
-                ))
-            .toList(),
+      child: SizedBox(
+        height: 180,
+        child: CanvasTouchDetector(
+          builder: (context) => CustomPaint(
+            painter: ElevationSelectorPainter(
+              elevation: elevation,
+              context: context,
+              onToggle: _onToggle,
+            ),
+            child: Container(),
+          ),
+        ),
       ),
     );
   }
+}
+
+class ElevationSelectorPainter extends CustomPainter {
+  final BuildContext context;
+  final ProblemElevation elevation;
+  final Function(ElevationType) onToggle;
+  static final int sides = 8;
+  static final double angle = (math.pi * 2) / sides;
+  static final double startAngle = -(angle / 2);
+  static final Map<AspectType, double> aspectStartAngles = {
+    AspectType.east: startAngle,
+    AspectType.southEast: startAngle + (1 * angle),
+    AspectType.south: startAngle + (2 * angle),
+    AspectType.southWest: startAngle + (3 * angle),
+    AspectType.west: startAngle + (4 * angle),
+    AspectType.northWest: startAngle + (5 * angle),
+    AspectType.north: startAngle + (6 * angle),
+    AspectType.northEast: startAngle + (7 * angle),
+  };
+
+  ElevationSelectorPainter({this.elevation, this.context, this.onToggle});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    Offset center = Offset(size.width / 2, size.height / 2);
+    double outerRadius = size.height / 2.5;
+    double middleRadius = size.height / 4;
+    double innerRadius = size.height / 7;
+
+    var touchCanvas = TouchyCanvas(context, canvas);
+
+    var fillPaint = Paint()
+      ..color = Colors.blue.shade300
+      ..strokeWidth = 1
+      ..style = PaintingStyle.fill
+      ..strokeCap = StrokeCap.round;
+
+    var outlinePaint = Paint()
+      ..color = Colors.grey
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    // Parameters
+    var topLen = size.height;
+    var midLen = topLen / 3;
+    var upperLen = topLen * 2 / 3;
+    var startAngle = math.pi / 3;
+
+    // Bottom points
+    var centerX = size.width / 2;
+    var bottomLX = centerX - (topLen / 2);
+    var bottomRX = bottomLX + topLen;
+    var bottomY = size.height;
+    // Mid points
+    var midLX = bottomLX + midLen * math.cos(startAngle);
+    var midRX = bottomLX + topLen - (midLen * math.cos(startAngle));
+    var midY = bottomY - midLen * math.sin(startAngle);
+    // Upper points
+    var upperLX = bottomLX + upperLen * math.cos(startAngle);
+    var upperRX = bottomLX + topLen - (upperLen * math.cos(startAngle));
+    var upperY = bottomY - upperLen * math.sin(startAngle);
+    // Tippy top
+    var topY = bottomY - topLen * math.sin(startAngle);
+
+    // Draw below treeline
+    var bottomPath = Path();
+    bottomPath.moveTo(bottomLX, bottomY);
+    bottomPath.lineTo(midLX, midY);
+    bottomPath.lineTo(midRX, midY);
+    bottomPath.lineTo(bottomRX, bottomY);
+    bottomPath.close();
+
+    if (elevation.isActive(ElevationType.belowTreeline)) {
+      canvas.drawPath(bottomPath, fillPaint);
+    }
+
+    touchCanvas.drawPath(
+      bottomPath,
+      outlinePaint,
+      onTapDown: (tapDetail) {
+        print('Below');
+        onToggle(ElevationType.belowTreeline);
+      },
+    );
+
+    // Draw at treeline
+    var midPath = Path();
+    midPath.moveTo(midLX, midY);
+    midPath.lineTo(upperLX, upperY);
+    midPath.lineTo(upperRX, upperY);
+    midPath.lineTo(midRX, midY);
+    midPath.close();
+
+    if (elevation.isActive(ElevationType.nearTreeline)) {
+      canvas.drawPath(midPath, fillPaint);
+    }
+
+    touchCanvas.drawPath(
+      midPath,
+      outlinePaint,
+      onTapDown: (tapDetail) {
+        print('At');
+        onToggle(ElevationType.nearTreeline);
+      },
+    );
+
+    // Draw above treeline
+    var upperPath = Path();
+    upperPath.moveTo(upperLX, upperY);
+    upperPath.lineTo(centerX, topY);
+    upperPath.lineTo(upperRX, upperY);
+    upperPath.close();
+
+    if (elevation.isActive(ElevationType.aboveTreeline)) {
+      canvas.drawPath(upperPath, fillPaint);
+    }
+
+    touchCanvas.drawPath(
+      upperPath,
+      outlinePaint,
+      onTapDown: (tapDetail) {
+        print('Above');
+        onToggle(ElevationType.aboveTreeline);
+      },
+    );
+
+    // Draw labels
+    var belowLabelX = (midLX - bottomLX) / 2;
+    var belowLabelY = bottomY - ((bottomY - midY + 10) / 2);
+    var bottomPainter = _labelTextPainter(ElevationType.belowTreeline.toName());
+    var belowOffset = Offset(belowLabelX, belowLabelY);
+    bottomPainter.paint(canvas, belowOffset);
+
+    var midLabelX = ((upperLX - bottomLX) / 2) + belowLabelX;
+    var midLabelY = bottomY - (((bottomY - upperY) / 2) + 10 + (bottomY - belowLabelY));
+    var midPainter = _labelTextPainter(ElevationType.nearTreeline.toName());
+    var midOffset = Offset(midLabelX, midLabelY);
+    midPainter.paint(canvas, midOffset);
+
+    var upperLabelX = ((upperLX - bottomLX) / 2) + midLabelX;
+    var upperLabelY = bottomY - (((bottomY - upperY) / 2) + (bottomY - midLabelY));
+    var upperPainter = _labelTextPainter(ElevationType.aboveTreeline.toName());
+    var upperOffset = Offset(upperLabelX, upperLabelY);
+    upperPainter.paint(canvas, upperOffset);
+  }
+
+  TextPainter _labelTextPainter(String label) {
+    final textStyle = TextStyle(
+      color: Colors.black,
+      fontSize: 12,
+    );
+    final textSpan = TextSpan(
+      text: label,
+      style: textStyle,
+    );
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(
+      minWidth: 0,
+    );
+
+    return textPainter;
+  }
+
+  @override
+  bool shouldRepaint(ElevationSelectorPainter oldDelegate) => true;
+
+  @override
+  bool shouldRebuildSemantics(ElevationSelectorPainter oldDelegate) => false;
 }
 
 class ProblemSizeInput extends StatelessWidget {
