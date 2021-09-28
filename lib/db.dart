@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/models/problem.dart';
@@ -43,6 +44,7 @@ class DatabaseManager {
     await db.execute(PlanModelProvider.createStatement);
     await db.execute(AvalancheProblemModelProvider.createStatement);
     await db.execute(TerrainPlanModelProvider.createStatement);
+    await db.execute(CheckinPointModelProvider.createStatement);
   }
 
   _onUpgrade(Database db, int oldVersion, int newVersion) async {

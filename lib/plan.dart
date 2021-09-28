@@ -18,7 +18,7 @@ class PlanPage extends StatefulWidget {
   State<StatefulWidget> createState() => PlanPageState(plan: plan);
 }
 
-class PlanPageState extends State<PlanPage> {
+class PlanPageState extends State<PlanPage> { 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController keyMessageController = TextEditingController();
   final TextEditingController forecastController = TextEditingController();
@@ -140,7 +140,7 @@ class PlanPageState extends State<PlanPage> {
         child: Form(
           key: _formKey,
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[

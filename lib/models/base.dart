@@ -8,7 +8,6 @@ abstract class BaseModel {
   int id;
 
   bool isPersisted() {
-    stderr.writeln("${this.id}");
     return (this.id != null);
   }
 

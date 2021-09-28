@@ -1,3 +1,4 @@
+import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/common.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +30,7 @@ class TerrainPlanSummary extends StatelessWidget {
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Turnaround time"),
-                          Text(plan.turnaroundTime.format(context))
-                        ],
+                        children: [Text("Turnaround time"), Text(plan.turnaroundTime.format(context))],
                       ),
                     ),
                   ],
@@ -41,8 +39,7 @@ class TerrainPlanSummary extends StatelessWidget {
                   children: [
                     Text(
                       "Route",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -58,8 +55,7 @@ class TerrainPlanSummary extends StatelessWidget {
                   children: [
                     Text(
                       "Areas to avoid",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -92,8 +88,8 @@ class TerrainPlanEditPage extends StatefulWidget {
 class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
   final TextEditingController routeController = TextEditingController();
   final TextEditingController areasToAvoidController = TextEditingController();
-  final TextEditingController turnaroundPointController =
-      TextEditingController();
+  final TextEditingController turnaroundPointController = TextEditingController();
+  List<CheckinPointModel> checkinPoints = [];
 
   @override
   void initState() {
@@ -101,6 +97,12 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
     routeController.text = widget.terrainPlan.route;
     areasToAvoidController.text = widget.terrainPlan.areasToAvoid;
     turnaroundPointController.text = widget.terrainPlan.turnaroundPoint;
+
+    CheckinPointModelProvider().getByTerrainPlanId(widget.terrainPlan.id).then((_points) {
+      setState(() {
+        checkinPoints = _points;
+      });
+    });
   }
 
   Future<void> _showTurnaroundTimePicker(BuildContext context) async {
@@ -113,8 +115,25 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
     });
   }
 
+  _showCreateCheckinPage(BuildContext context) async {
+    print('new checkin');
+  }
+
+  _onCheckinPointTapped(BuildContext context, CheckinPointModel trip) async {
+    // await Navigator.push(context, MaterialPageRoute(builder: (context) {
+    //   return TripPage(trip: trip);
+    // }));
+  }
+
   @override
   Widget build(BuildContext context) {
+    var checkinPointList = checkinPoints.map((point) {
+      return CheckinPointListItem(
+        point: point,
+        onTapped: _onCheckinPointTapped,
+      );
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Edit terrain plan"),
@@ -158,6 +177,14 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
                   },
                 ),
                 const SizedBox(height: 10),
+                Column(
+                  children: checkinPointList,
+                ),
+                ElevatedButton(
+                  onPressed: () => _showCreateCheckinPage(context),
+                  child: Text('Add checkin point'),
+                ),
+                const SizedBox(height: 10),
                 SectionText(text: "Areas to avoid"),
                 const SizedBox(height: 10),
                 TextField(
@@ -171,8 +198,7 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      widget.terrainPlan.areasToAvoid =
-                          areasToAvoidController.text;
+                      widget.terrainPlan.areasToAvoid = areasToAvoidController.text;
                     });
                   },
                 ),
@@ -190,8 +216,7 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
                   ),
                   onChanged: (value) {
                     setState(() {
-                      widget.terrainPlan.turnaroundPoint =
-                          turnaroundPointController.text;
+                      widget.terrainPlan.turnaroundPoint = turnaroundPointController.text;
                     });
                   },
                 ),
@@ -222,10 +247,30 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
   }
 }
 
+class CheckinPointListItem extends StatelessWidget {
+  final CheckinPointModel point;
+  final Function(BuildContext, CheckinPointModel) onTapped;
+
+  const CheckinPointListItem({Key key, this.point, this.onTapped}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: Text(point.description),
+        subtitle: Text(point.time.toString()),
+        trailing: Icon(Icons.chevron_right),
+        onTap: () {
+          onTapped(context, point);
+        },
+      ),
+    );
+  }
+}
+
 class TerrainMindsetInput extends StatefulWidget {
   final TerrainMindset mindset;
-  const TerrainMindsetInput({Key key, @required this.mindset})
-      : super(key: key);
+  const TerrainMindsetInput({Key key, @required this.mindset}) : super(key: key);
 
   @override
   _TerrainMindsetInputState createState() => _TerrainMindsetInputState();
@@ -251,8 +296,7 @@ class _TerrainMindsetInputState extends State<TerrainMindsetInput> {
             widget.mindset.set(newValue);
           });
         },
-        items: MindsetType.values
-            .map<DropdownMenuItem<MindsetType>>((MindsetType value) {
+        items: MindsetType.values.map<DropdownMenuItem<MindsetType>>((MindsetType value) {
           return DropdownMenuItem<MindsetType>(
             value: value,
             child: Text(value.toName()),
