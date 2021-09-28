@@ -195,9 +195,7 @@ class ProblemSummary extends StatelessWidget {
   final AvalancheProblemModel problem;
   final Function(BuildContext, AvalancheProblemModel) onEditProblem;
 
-  const ProblemSummary(
-      {Key key, @required this.problem, @required this.onEditProblem})
-      : super(key: key);
+  const ProblemSummary({Key key, @required this.problem, @required this.onEditProblem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -231,10 +229,7 @@ class ProblemSummary extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Column(
-                        children: [
-                          AspectElevationDiagram(problem: problem),
-                          Text('Aspect/elevation')
-                        ],
+                        children: [AspectElevationDiagram(problem: problem), Text('Aspect/elevation')],
                       ),
                     ),
                     Expanded(
@@ -313,54 +308,49 @@ class AspectElevationPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     for (final activeAspect in problemAspect.aspects) {
-      stderr.writeln('Drawing ${activeAspect.toName()}');
       var startAspectAngle = aspectStartAngles[activeAspect];
       var endAspectAngle = startAspectAngle + angle;
 
       double innerStartX, innerStartY, innerEndX, innerEndY, shadeRadius;
 
       // Find start/end inner points
-      if (elevation.elevations.contains(ElevationType.aboveTreeline)) {
-        innerStartX = center.dx;
-        innerStartY = center.dy;
+      for (final activeElevation in elevation.elevations) {
+        if (activeElevation == ElevationType.aboveTreeline) {
+          innerStartX = center.dx;
+          innerStartY = center.dy;
 
-        innerEndX = center.dx;
-        innerEndY = center.dy;
-      } else if (elevation.elevations.contains(ElevationType.nearTreeline)) {
-        innerStartX = innerRadius * math.cos(startAspectAngle) + center.dx;
-        innerStartY = innerRadius * math.sin(startAspectAngle) + center.dy;
+          innerEndX = center.dx;
+          innerEndY = center.dy;
+          shadeRadius = innerRadius;
+        } else if (activeElevation == ElevationType.nearTreeline) {
+          innerStartX = innerRadius * math.cos(startAspectAngle) + center.dx;
+          innerStartY = innerRadius * math.sin(startAspectAngle) + center.dy;
 
-        innerEndX = innerRadius * math.cos(endAspectAngle) + center.dx;
-        innerEndY = innerRadius * math.sin(endAspectAngle) + center.dy;
-      } else if (elevation.elevations.contains(ElevationType.belowTreeline)) {
-        innerStartX = middleRadius * math.cos(startAspectAngle) + center.dx;
-        innerStartY = middleRadius * math.sin(startAspectAngle) + center.dy;
+          innerEndX = innerRadius * math.cos(endAspectAngle) + center.dx;
+          innerEndY = innerRadius * math.sin(endAspectAngle) + center.dy;
+          shadeRadius = middleRadius;
+        } else if (activeElevation == ElevationType.belowTreeline) {
+          innerStartX = middleRadius * math.cos(startAspectAngle) + center.dx;
+          innerStartY = middleRadius * math.sin(startAspectAngle) + center.dy;
 
-        innerEndX = middleRadius * math.cos(endAspectAngle) + center.dx;
-        innerEndY = middleRadius * math.sin(endAspectAngle) + center.dy;
+          innerEndX = middleRadius * math.cos(endAspectAngle) + center.dx;
+          innerEndY = middleRadius * math.sin(endAspectAngle) + center.dy;
+          shadeRadius = outerRadius;
+        }
+
+        double outerStartX = shadeRadius * math.cos(startAspectAngle) + center.dx;
+        double outerStartY = shadeRadius * math.sin(startAspectAngle) + center.dy;
+        double outerEndX = shadeRadius * math.cos(endAspectAngle) + center.dx;
+        double outerEndY = shadeRadius * math.sin(endAspectAngle) + center.dy;
+
+        var path = Path();
+        path.moveTo(innerStartX, innerStartY);
+        path.lineTo(outerStartX, outerStartY);
+        path.lineTo(outerEndX, outerEndY);
+        path.lineTo(innerEndX, innerEndY);
+        path.close();
+        canvas.drawPath(path, fillPaint);
       }
-
-      // Find radius to use for outer points
-      if (elevation.elevations.contains(ElevationType.belowTreeline)) {
-        shadeRadius = outerRadius;
-      } else if (elevation.elevations.contains(ElevationType.nearTreeline)) {
-        shadeRadius = middleRadius;
-      } else if (elevation.elevations.contains(ElevationType.aboveTreeline)) {
-        shadeRadius = innerRadius;
-      }
-
-      double outerStartX = shadeRadius * math.cos(startAspectAngle) + center.dx;
-      double outerStartY = shadeRadius * math.sin(startAspectAngle) + center.dy;
-      double outerEndX = shadeRadius * math.cos(endAspectAngle) + center.dx;
-      double outerEndY = shadeRadius * math.sin(endAspectAngle) + center.dy;
-
-      var path = Path();
-      path.moveTo(innerStartX, innerStartY);
-      path.lineTo(outerStartX, outerStartY);
-      path.lineTo(outerEndX, outerEndY);
-      path.lineTo(innerEndX, innerEndY);
-      path.close();
-      canvas.drawPath(path, fillPaint);
     }
 
     var paint = Paint()
@@ -373,8 +363,7 @@ class AspectElevationPainter extends CustomPainter {
     var outerOctagonPath = _polygonPath(sides, outerRadius, center, 2.0, true);
     canvas.drawPath(outerOctagonPath, paint);
 
-    var middleOctagonPath =
-        _polygonPath(sides, middleRadius, center, 2.0, false);
+    var middleOctagonPath = _polygonPath(sides, middleRadius, center, 2.0, false);
     canvas.drawPath(middleOctagonPath, paint);
 
     var innerOctagonPath = _polygonPath(sides, innerRadius, center, 2.0, false);
@@ -388,8 +377,7 @@ class AspectElevationPainter extends CustomPainter {
       double x = labelRadius * math.cos(angleOffset) + center.dx;
       double y = labelRadius * math.sin(angleOffset) + center.dy;
       var painter = _labelTextPainter(ProblemAspect.labels[i]);
-      var labelOffset =
-          Offset(x - (painter.width / 2), y - (painter.height / 2));
+      var labelOffset = Offset(x - (painter.width / 2), y - (painter.height / 2));
       painter.paint(canvas, labelOffset);
     }
   }

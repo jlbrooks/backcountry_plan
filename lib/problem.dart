@@ -610,7 +610,6 @@ class ElevationSelectorPainter extends CustomPainter {
       bottomPath,
       outlinePaint,
       onTapDown: (tapDetail) {
-        print('Below');
         onToggle(ElevationType.belowTreeline);
       },
     );
@@ -631,7 +630,6 @@ class ElevationSelectorPainter extends CustomPainter {
       midPath,
       outlinePaint,
       onTapDown: (tapDetail) {
-        print('At');
         onToggle(ElevationType.nearTreeline);
       },
     );
@@ -651,7 +649,6 @@ class ElevationSelectorPainter extends CustomPainter {
       upperPath,
       outlinePaint,
       onTapDown: (tapDetail) {
-        print('Above');
         onToggle(ElevationType.aboveTreeline);
       },
     );
