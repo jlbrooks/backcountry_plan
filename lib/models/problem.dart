@@ -14,18 +14,18 @@ class AvalancheProblemModel extends BaseModel {
   String dangerTrendTiming;
   String notes;
 
-  int planId;
+  int? planId;
 
   AvalancheProblemModel(
       {id,
-      AvalancheProblemType problemType,
-      AvalancheProblemSize size,
-      ProblemElevation elevation,
-      ProblemAspect aspect,
-      ProblemLikelihood likelihood,
-      this.terrainFeatures,
-      this.dangerTrendTiming,
-      this.notes,
+      AvalancheProblemType? problemType,
+      AvalancheProblemSize? size,
+      ProblemElevation? elevation,
+      ProblemAspect? aspect,
+      ProblemLikelihood? likelihood,
+      this.terrainFeatures = "",
+      this.dangerTrendTiming = "",
+      this.notes = "",
       this.planId})
       : this.problemType = problemType ?? AvalancheProblemType(),
         this.size = size ?? AvalancheProblemSize(),
@@ -177,7 +177,7 @@ class AvalancheProblemSize {
     return "$startSize-$endSize";
   }
 
-  static AvalancheProblemSize deserialize(String s) {
+  static AvalancheProblemSize deserialize(String? s) {
     if (s != null) {
       var split = s.split("-");
       return AvalancheProblemSize(
@@ -197,7 +197,7 @@ class AvalancheProblemSize {
 enum LikelihoodType { unlikely, possible, likely, veryLikely, almostCertain }
 
 extension LikelihoodTypeHelpers on LikelihoodType {
-  String toName() => ProblemLikelihood.problemLikelyhoodNames[this];
+  String toName() => ProblemLikelihood.problemLikelyhoodNames[this]!;
 }
 
 class ProblemLikelihood {
@@ -240,7 +240,7 @@ class ProblemLikelihood {
 enum ElevationType { belowTreeline, nearTreeline, aboveTreeline }
 
 extension ElevationTypeHelpers on ElevationType {
-  String toName() => ProblemElevation.problemElevationNames[this];
+  String toName() => ProblemElevation.problemElevationNames[this]!;
 }
 
 class ProblemElevation {
@@ -250,7 +250,7 @@ class ProblemElevation {
     ElevationType.aboveTreeline: 'Above treeline'
   };
 
-  List<ElevationType> get elevations => activeElevations.keys.where((e) => activeElevations[e]).toList();
+  List<ElevationType> get elevations => activeElevations.keys.where((e) => activeElevations[e]!).toList();
   Map<ElevationType, bool> activeElevations;
 
   ProblemElevation() : this.activeElevations = _defaultActiveElevations();
@@ -285,18 +285,18 @@ class ProblemElevation {
   }
 
   toggle(ElevationType e) {
-    activeElevations[e] = !activeElevations[e];
+    activeElevations[e] = !activeElevations[e]!;
   }
 
   bool isActive(ElevationType e) {
-    return activeElevations[e];
+    return activeElevations[e]!;
   }
 }
 
 enum AspectType { north, northEast, east, southEast, south, southWest, west, northWest }
 
 extension AspectTypeHelpers on AspectType {
-  String toName() => ProblemAspect.problemAspectNames[this];
+  String toName() => ProblemAspect.problemAspectNames[this]!;
 }
 
 class ProblemAspect {
@@ -313,7 +313,7 @@ class ProblemAspect {
 
   static final List<String> labels = ['E', 'SE', 'S', 'SW', 'W', 'NW', 'N', 'NE'];
 
-  List<AspectType> get aspects => activeAspects.keys.where((e) => activeAspects[e]).toList();
+  List<AspectType> get aspects => activeAspects.keys.where((e) => activeAspects[e]!).toList();
   Map<AspectType, bool> activeAspects;
 
   ProblemAspect.fromList(List<AspectType> activeAspectList) : this.activeAspects = parseList(activeAspectList);
@@ -348,11 +348,11 @@ class ProblemAspect {
   }
 
   toggle(AspectType e) {
-    activeAspects[e] = !activeAspects[e];
+    activeAspects[e] = !activeAspects[e]!;
   }
 
   bool isActive(AspectType e) {
-    return activeAspects[e];
+    return activeAspects[e]!;
   }
 
   bool operator ==(Object other) {
@@ -367,7 +367,7 @@ class ProblemAspect {
     }
 
     // ignore: test_types_in_equals
-    ProblemAspect otherAspect = (other as ProblemAspect);
+    ProblemAspect otherAspect = other;
 
     for (var e in AspectType.values) {
       if (this.isActive(e) != otherAspect.isActive(e)) {
@@ -385,7 +385,7 @@ class ProblemAspect {
 enum ProblemType { dryLoose, stormSlab, windSlab, cornice, wetLoose, wetSlab, persistentSlab, deepSlab, glide }
 
 extension ProblemTypeHelpers on ProblemType {
-  String toName() => AvalancheProblemType.problemTypeNames[this];
+  String toName() => AvalancheProblemType.problemTypeNames[this]!;
 }
 
 class AvalancheProblemType {

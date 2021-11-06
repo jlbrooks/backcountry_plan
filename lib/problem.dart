@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:backcountry_plan/models/problem.dart';
@@ -9,7 +8,7 @@ import 'package:touchable/touchable.dart';
 class ProblemEditPage extends StatefulWidget {
   final AvalancheProblemModel problem;
 
-  ProblemEditPage({@required this.problem});
+  ProblemEditPage({required this.problem});
 
   @override
   State<StatefulWidget> createState() => ProblemEditPageState(problem: problem);
@@ -21,7 +20,7 @@ class ProblemEditPageState extends State<ProblemEditPage> {
   final TextEditingController _dangerTrendController = TextEditingController();
   RangeValues problemSizeValues = RangeValues(0, 4);
 
-  ProblemEditPageState({@required this.problem});
+  ProblemEditPageState({required this.problem});
 
   @override
   void initState() {
@@ -125,7 +124,7 @@ class ProblemLikelihoodInput extends StatefulWidget {
   final ProblemLikelihood likelihood;
   final bool isEnabled;
 
-  ProblemLikelihoodInput({Key key, @required this.likelihood, this.isEnabled = true}) : super(key: key);
+  ProblemLikelihoodInput({Key? key, required this.likelihood, this.isEnabled = true}) : super(key: key);
 
   @override
   _ProblemLikelihoodInputState createState() => _ProblemLikelihoodInputState();
@@ -173,11 +172,11 @@ class _ProblemLikelihoodInputState extends State<ProblemLikelihoodInput> {
 class LineSliderTickShape extends SliderTickMarkShape {
   final double width;
 
-  const LineSliderTickShape({@required this.width});
+  const LineSliderTickShape({required this.width});
 
   @override
   Size getPreferredSize({
-    @required SliderThemeData sliderTheme,
+    required SliderThemeData sliderTheme,
     bool isEnabled = false,
   }) {
     return Size.fromWidth(width);
@@ -185,12 +184,12 @@ class LineSliderTickShape extends SliderTickMarkShape {
 
   @override
   void paint(PaintingContext context, Offset center,
-      {Animation<double> activationAnimation,
-      @required RenderBox parentBox,
-      @required SliderThemeData sliderTheme,
-      @required Animation<double> enableAnimation,
-      @required TextDirection textDirection,
-      @required Offset thumbCenter,
+      {Animation<double>? activationAnimation,
+      required RenderBox parentBox,
+      required SliderThemeData sliderTheme,
+      required Animation<double> enableAnimation,
+      required TextDirection textDirection,
+      required Offset thumbCenter,
       bool isEnabled = false}) {
     final Canvas canvas = context.canvas;
 
@@ -219,8 +218,8 @@ class LineSliderThumbPoint extends SliderComponentShape {
   final List<String> valueStrings;
 
   const LineSliderThumbPoint({
-    @required this.width,
-    @required this.valueStrings,
+    required this.width,
+    required this.valueStrings,
     this.min = 0,
     this.max = 4,
   });
@@ -232,17 +231,16 @@ class LineSliderThumbPoint extends SliderComponentShape {
 
   @override
   void paint(PaintingContext context, Offset center,
-      {Animation<double> activationAnimation,
-      Animation<double> enableAnimation,
-      bool isDiscrete,
-      TextPainter labelPainter,
-      RenderBox parentBox,
-      SliderThemeData sliderTheme,
-      TextDirection textDirection,
-      double value,
-      double textScaleFactor,
-      Size sizeWithOverflow}) {
-    //stderr.writeln('${value}');
+      {required Animation<double> activationAnimation,
+      required Animation<double> enableAnimation,
+      required bool isDiscrete,
+      required TextPainter labelPainter,
+      required RenderBox parentBox,
+      required SliderThemeData sliderTheme,
+      required TextDirection textDirection,
+      required double value,
+      required double textScaleFactor,
+      required Size sizeWithOverflow}) {
     final Canvas canvas = context.canvas;
 
     /* Paint the line */
@@ -292,7 +290,7 @@ class LineSliderThumbPoint extends SliderComponentShape {
 
 // class ProblemAspectInput extends StatefulWidget {
 //   final ProblemAspect aspects;
-//   ProblemAspectInput({Key key, @required this.aspects}) : super(key: key);
+//   ProblemAspectInput({Key? key, required this.aspects}) : super(key: key);
 
 //   @override
 //   _ProblemAspectInputState createState() =>
@@ -302,7 +300,7 @@ class LineSliderThumbPoint extends SliderComponentShape {
 // class _ProblemAspectInputState extends State<ProblemAspectInput> {
 //   final ProblemAspect aspects;
 
-//   _ProblemAspectInputState({@required this.aspects});
+//   _ProblemAspectInputState({required this.aspects});
 
 //   @override
 //   Widget build(BuildContext context) {
@@ -326,7 +324,7 @@ class LineSliderThumbPoint extends SliderComponentShape {
 
 class ProblemAspectInput extends StatefulWidget {
   final ProblemAspect aspects;
-  ProblemAspectInput({Key key, @required this.aspects}) : super(key: key);
+  ProblemAspectInput({Key? key, required this.aspects}) : super(key: key);
 
   @override
   _ProblemAspectInputState createState() => _ProblemAspectInputState(aspects: aspects);
@@ -335,7 +333,7 @@ class ProblemAspectInput extends StatefulWidget {
 class _ProblemAspectInputState extends State<ProblemAspectInput> {
   final ProblemAspect aspects;
 
-  _ProblemAspectInputState({@required this.aspects});
+  _ProblemAspectInputState({required this.aspects});
 
   _onToggle(AspectType e) {
     setState(() {
@@ -381,7 +379,7 @@ class AspectSelectorPainter extends CustomPainter {
     AspectType.northEast: startAngle + (7 * angle),
   };
 
-  AspectSelectorPainter({this.activeAspects, this.context, this.onToggle});
+  AspectSelectorPainter({required this.activeAspects, required this.context, required this.onToggle});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -406,7 +404,7 @@ class AspectSelectorPainter extends CustomPainter {
 
     // Fill in active aspects
     for (final aspect in activeAspects) {
-      var startAspectAngle = aspectStartAngles[aspect];
+      var startAspectAngle = aspectStartAngles[aspect]!;
       var endAspectAngle = startAspectAngle + angle;
 
       double outerStartX = outerRadius * math.cos(startAspectAngle) + center.dx;
@@ -428,7 +426,7 @@ class AspectSelectorPainter extends CustomPainter {
 
     // Draw outline triangles for all aspects, along with touch handling
     for (final aspect in AspectType.values) {
-      var startAspectAngle = aspectStartAngles[aspect];
+      var startAspectAngle = aspectStartAngles[aspect]!;
       var endAspectAngle = startAspectAngle + angle;
 
       double outerStartX = outerRadius * math.cos(startAspectAngle) + center.dx;
@@ -494,7 +492,7 @@ class AspectSelectorPainter extends CustomPainter {
 
 class ProblemElevationInput extends StatefulWidget {
   final ProblemElevation elevation;
-  ProblemElevationInput({Key key, @required this.elevation}) : super(key: key);
+  ProblemElevationInput({Key? key, required this.elevation}) : super(key: key);
 
   @override
   _ProblemElevationInputState createState() => _ProblemElevationInputState(elevation: elevation);
@@ -503,7 +501,7 @@ class ProblemElevationInput extends StatefulWidget {
 class _ProblemElevationInputState extends State<ProblemElevationInput> {
   final ProblemElevation elevation;
 
-  _ProblemElevationInputState({@required this.elevation});
+  _ProblemElevationInputState({required this.elevation});
 
   _onToggle(ElevationType e) {
     setState(() {
@@ -549,15 +547,10 @@ class ElevationSelectorPainter extends CustomPainter {
     AspectType.northEast: startAngle + (7 * angle),
   };
 
-  ElevationSelectorPainter({this.elevation, this.context, this.onToggle});
+  ElevationSelectorPainter({required this.elevation, required this.context, required this.onToggle});
 
   @override
   void paint(Canvas canvas, Size size) {
-    Offset center = Offset(size.width / 2, size.height / 2);
-    double outerRadius = size.height / 2.5;
-    double middleRadius = size.height / 4;
-    double innerRadius = size.height / 7;
-
     var touchCanvas = TouchyCanvas(context, canvas);
 
     var fillPaint = Paint()
@@ -702,9 +695,9 @@ class ElevationSelectorPainter extends CustomPainter {
 
 class ProblemSizeInput extends StatelessWidget {
   const ProblemSizeInput({
-    Key key,
-    @required this.problemSizeValues,
-    @required this.onChanged,
+    Key? key,
+    required this.problemSizeValues,
+    required this.onChanged,
   }) : super(key: key);
 
   final RangeValues problemSizeValues;
@@ -737,7 +730,7 @@ class ProblemSizeInput extends StatelessWidget {
 
 class ProblemTypeInput extends StatefulWidget {
   final AvalancheProblemType problemType;
-  const ProblemTypeInput({Key key, @required this.problemType}) : super(key: key);
+  const ProblemTypeInput({Key? key, required this.problemType}) : super(key: key);
 
   @override
   _ProblemTypeInputState createState() => _ProblemTypeInputState();
@@ -758,9 +751,11 @@ class _ProblemTypeInputState extends State<ProblemTypeInput> {
           height: 2,
           color: Colors.deepPurpleAccent,
         ),
-        onChanged: (ProblemType newValue) {
+        onChanged: (ProblemType? newValue) {
           setState(() {
-            widget.problemType.set(newValue);
+            if (newValue != null) {
+              widget.problemType.set(newValue);
+            }
           });
         },
         items: ProblemType.values.map<DropdownMenuItem<ProblemType>>((ProblemType value) {

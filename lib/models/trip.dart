@@ -6,17 +6,23 @@ import 'package:intl/intl.dart';
 class TripModel extends BaseModel {
   String name;
   DateTime date;
-  int planId;
-  PlanModel plan;
+  int? planId;
+  PlanModel? plan;
 
   String friendlyDate() {
     return DateFormat.yMMMd().format(date);
   }
 
-  TripModel({id, this.name, this.date, this.planId, this.plan}) : super(id: id);
+  TripModel({
+    id,
+    required this.name,
+    required this.date,
+    this.planId,
+    this.plan,
+  }) : super(id: id);
 
   TripModel.create()
-      : this.name = '',
+      : this.name = "",
         this.date = DateTime.now();
 }
 

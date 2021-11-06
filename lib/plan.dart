@@ -12,21 +12,21 @@ import 'package:flutter/material.dart';
 class PlanPage extends StatefulWidget {
   final PlanModel plan;
 
-  PlanPage({@required this.plan}) : super();
+  PlanPage({required this.plan}) : super();
 
   @override
   State<StatefulWidget> createState() => PlanPageState(plan: plan);
 }
 
-class PlanPageState extends State<PlanPage> { 
+class PlanPageState extends State<PlanPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController keyMessageController = TextEditingController();
   final TextEditingController forecastController = TextEditingController();
   final PlanModel plan;
   List<AvalancheProblemModel> problems = [];
-  TerrainPlanModel terrainPlan;
+  late TerrainPlanModel terrainPlan;
 
-  PlanPageState({@required this.plan}) : super();
+  PlanPageState({required this.plan}) : super();
 
   @override
   void initState() {
@@ -36,14 +36,14 @@ class PlanPageState extends State<PlanPage> {
     if (plan.forecast.isNotEmpty) {
       forecastController.text = plan.forecast;
     }
-    terrainPlan = TerrainPlanModel.newForPlan(plan.id);
-    AvalancheProblemModelProvider().getByPlanId(plan.id).then((_problems) {
+    terrainPlan = TerrainPlanModel.newForPlan(plan.id!);
+    AvalancheProblemModelProvider().getByPlanId(plan.id!).then((_problems) {
       setState(() {
         problems = _problems;
       });
     });
 
-    TerrainPlanModelProvider().getByPlanId(plan.id).then((_plans) {
+    TerrainPlanModelProvider().getByPlanId(plan.id!).then((_plans) {
       setState(() {
         if (_plans.isNotEmpty) {
           if (_plans.length > 1) {
@@ -59,7 +59,7 @@ class PlanPageState extends State<PlanPage> {
   }
 
   _onAddProblem(BuildContext context) async {
-    var problem = AvalancheProblemModel.newForPlan(plan.id);
+    var problem = AvalancheProblemModel.newForPlan(plan.id!);
     final result = await Navigator.push<AvalancheProblemModel>(
       context,
       MaterialPageRoute(builder: (context) {
@@ -110,7 +110,7 @@ class PlanPageState extends State<PlanPage> {
   _onSave(BuildContext context) {
     // Validate will return true if the form is valid, or false if
     // the form is invalid.
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       plan.keyMessage = keyMessageController.text;
       plan.forecast = forecastController.text;
       Navigator.pop(context, plan);
@@ -195,7 +195,7 @@ class ProblemSummary extends StatelessWidget {
   final AvalancheProblemModel problem;
   final Function(BuildContext, AvalancheProblemModel) onEditProblem;
 
-  const ProblemSummary({Key key, @required this.problem, @required this.onEditProblem}) : super(key: key);
+  const ProblemSummary({Key? key, required this.problem, required this.onEditProblem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -254,7 +254,7 @@ class ProblemSummary extends StatelessWidget {
 class AspectElevationDiagram extends StatelessWidget {
   final AvalancheProblemModel problem;
 
-  const AspectElevationDiagram({Key key, this.problem}) : super(key: key);
+  const AspectElevationDiagram({Key? key, required this.problem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -290,7 +290,7 @@ class AspectElevationPainter extends CustomPainter {
     AspectType.northEast: startAngle + (7 * angle),
   };
 
-  AspectElevationPainter({this.problemAspect, this.elevation});
+  AspectElevationPainter({required this.problemAspect, required this.elevation});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -308,10 +308,10 @@ class AspectElevationPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
 
     for (final activeAspect in problemAspect.aspects) {
-      var startAspectAngle = aspectStartAngles[activeAspect];
+      var startAspectAngle = aspectStartAngles[activeAspect]!;
       var endAspectAngle = startAspectAngle + angle;
 
-      double innerStartX, innerStartY, innerEndX, innerEndY, shadeRadius;
+      double innerStartX = 0.0, innerStartY = 0.0, innerEndX = 0.0, innerEndY = 0.0, shadeRadius = 0.0;
 
       // Find start/end inner points
       for (final activeElevation in elevation.elevations) {

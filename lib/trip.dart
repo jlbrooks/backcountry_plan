@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/plan.dart';
@@ -7,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TripListPage extends StatefulWidget {
-  TripListPage({Key key}) : super(key: key);
+  TripListPage({Key? key}) : super(key: key);
 
   @override
   TripListPageState createState() => TripListPageState();
 }
 
 class TripListPageState extends State<TripListPage> {
-  Future<List<TripModel>> futureTripList;
+  late Future<List<TripModel>> futureTripList;
 
   @override
   void initState() {
@@ -30,7 +28,7 @@ class TripListPageState extends State<TripListPage> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return TripListView(
-            trips: snapshot.data,
+            trips: snapshot.data!,
             isLoading: false,
           );
         } else if (snapshot.hasError) {
@@ -47,11 +45,10 @@ class TripListView extends StatefulWidget {
   final List<TripModel> trips;
   final bool isLoading;
 
-  TripListView({Key key, this.trips, this.isLoading}) : super(key: key);
+  TripListView({Key? key, required this.trips, required this.isLoading}) : super(key: key);
 
   @override
-  TripListViewState createState() =>
-      TripListViewState(trips: trips, isLoading: isLoading);
+  TripListViewState createState() => TripListViewState(trips: trips, isLoading: isLoading);
 }
 
 class TripListViewState extends State<TripListView> {
@@ -59,14 +56,13 @@ class TripListViewState extends State<TripListView> {
   final List<TripModel> trips;
   final bool isLoading;
 
-  TripListViewState({Key key, this.trips, this.isLoading});
+  TripListViewState({Key? key, required this.trips, required this.isLoading});
 
   @override
   Widget build(BuildContext context) {
     var tripList = ListView.builder(
       itemCount: trips.length,
-      itemBuilder: (context, index) =>
-          TripListItem(trip: trips[index], onTapped: _onTripPressed),
+      itemBuilder: (context, index) => TripListItem(trip: trips[index], onTapped: _onTripPressed),
     );
 
     return Scaffold(
@@ -107,7 +103,7 @@ class TripListItem extends StatelessWidget {
   final TripModel trip;
   final Function(BuildContext, TripModel) onTapped;
 
-  TripListItem({Key key, this.trip, this.onTapped}) : super(key: key);
+  TripListItem({Key? key, required this.trip, required this.onTapped}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +122,7 @@ class TripListItem extends StatelessWidget {
 
 class EditTripPage extends StatefulWidget {
   final TripModel trip;
-  EditTripPage({Key key, @required this.trip}) : super(key: key);
+  EditTripPage({Key? key, required this.trip}) : super(key: key);
 
   @override
   _EditTripPageState createState() => _EditTripPageState();
@@ -157,7 +153,7 @@ class _EditTripPageState extends State<EditTripPage> {
   }
 
   _onSave(BuildContext context) async {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       widget.trip.name = tripNameTextController.text;
       await TripModelProvider().save(widget.trip);
       Navigator.pop(context);
@@ -197,7 +193,7 @@ class _EditTripPageState extends State<EditTripPage> {
                 ),
                 maxLines: 1,
                 validator: (value) {
-                  if (value.isEmpty) {
+                  if (value == null || value.isEmpty) {
                     return 'Please enter a name';
                   }
                   return null;
@@ -231,7 +227,7 @@ class _EditTripPageState extends State<EditTripPage> {
 class TripPage extends StatefulWidget {
   final TripModel trip;
 
-  TripPage({Key key, @required this.trip}) : super(key: key);
+  TripPage({Key? key, required this.trip}) : super(key: key);
 
   @override
   TripPageState createState() => TripPageState(trip: trip);
@@ -239,13 +235,13 @@ class TripPage extends StatefulWidget {
 
 class TripPageState extends State<TripPage> {
   final TripModel trip;
-  PlanModel plan;
+  PlanModel? plan;
 
-  TripPageState({@required this.trip});
+  TripPageState({required this.trip});
 
   @override
   void initState() {
-    PlanModelProvider().getByTripId(trip.id).then((_plan) {
+    PlanModelProvider().getByTripId(trip.id!).then((_plan) {
       setState(() {
         plan = _plan;
       });
@@ -275,9 +271,7 @@ class TripPageState extends State<TripPage> {
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
-          children: [
-            PlanSummary(plan: plan, onNavigateToPlan: _navigateAndEditPlan)
-          ],
+          children: [PlanSummary(plan: plan, onNavigateToPlan: _navigateAndEditPlan)],
         ),
       ),
     );
@@ -285,18 +279,18 @@ class TripPageState extends State<TripPage> {
 
   _navigateAndEditPlan(BuildContext context) async {
     if (plan == null) {
-      plan = PlanModel(tripId: trip.id, keyMessage: '', forecast: '');
-      await PlanModelProvider().save(plan);
+      plan = PlanModel(tripId: trip.id!, keyMessage: '', forecast: '');
+      await PlanModelProvider().save(plan!);
     }
 
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) {
-        return PlanPage(plan: plan);
+        return PlanPage(plan: plan!);
       }),
     );
     if (result != null) {
-      PlanModelProvider().save(plan);
+      PlanModelProvider().save(plan!);
       setState(() {
         plan = plan;
       });
@@ -305,10 +299,10 @@ class TripPageState extends State<TripPage> {
 }
 
 class PlanSummary extends StatelessWidget {
-  final PlanModel plan;
+  final PlanModel? plan;
   final Function(BuildContext) onNavigateToPlan;
 
-  PlanSummary({@required this.plan, @required this.onNavigateToPlan});
+  PlanSummary({required this.plan, required this.onNavigateToPlan});
 
   @override
   Widget build(BuildContext context) {
@@ -319,22 +313,23 @@ class PlanSummary extends StatelessWidget {
         },
         child: Text('Create plan'),
       );
+    } else {
+      return Card(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(Icons.vpn_key),
+              title: Text('Key Message:'),
+              subtitle: Text(plan!.keyMessage),
+              trailing: Icon(Icons.chevron_right),
+              onTap: () {
+                onNavigateToPlan(context);
+              },
+            ),
+          ],
+        ),
+      );
     }
-    return Card(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            leading: Icon(Icons.vpn_key),
-            title: Text('Key Message:'),
-            subtitle: Text(plan.keyMessage),
-            trailing: Icon(Icons.chevron_right),
-            onTap: () {
-              onNavigateToPlan(context);
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

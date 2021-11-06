@@ -7,7 +7,7 @@ class TerrainPlanSummary extends StatelessWidget {
   final TerrainPlanModel plan;
   final Function(TerrainPlanModel) onTap;
 
-  const TerrainPlanSummary({Key key, this.plan, this.onTap}) : super(key: key);
+  const TerrainPlanSummary({Key? key, required this.plan, required this.onTap}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +79,7 @@ class TerrainPlanSummary extends StatelessWidget {
 class TerrainPlanEditPage extends StatefulWidget {
   final TerrainPlanModel terrainPlan;
 
-  TerrainPlanEditPage({Key key, @required this.terrainPlan}) : super(key: key);
+  TerrainPlanEditPage({Key? key, required this.terrainPlan}) : super(key: key);
 
   @override
   _TerrainPlanEditPageState createState() => _TerrainPlanEditPageState();
@@ -98,7 +98,7 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
     areasToAvoidController.text = widget.terrainPlan.areasToAvoid;
     turnaroundPointController.text = widget.terrainPlan.turnaroundPoint;
 
-    CheckinPointModelProvider().getByTerrainPlanId(widget.terrainPlan.id).then((_points) {
+    CheckinPointModelProvider().getByTerrainPlanId(widget.terrainPlan.id!).then((_points) {
       setState(() {
         checkinPoints = _points;
       });
@@ -110,9 +110,11 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
       context: context,
       initialTime: widget.terrainPlan.turnaroundTime,
     );
-    setState(() {
-      widget.terrainPlan.turnaroundTime = picked;
-    });
+    if (picked != null) {
+      setState(() {
+        widget.terrainPlan.turnaroundTime = picked;
+      });
+    }
   }
 
   _showCreateCheckinPage(BuildContext context) async {
@@ -251,7 +253,7 @@ class CheckinPointListItem extends StatelessWidget {
   final CheckinPointModel point;
   final Function(BuildContext, CheckinPointModel) onTapped;
 
-  const CheckinPointListItem({Key key, this.point, this.onTapped}) : super(key: key);
+  const CheckinPointListItem({Key? key, required this.point, required this.onTapped}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -270,7 +272,7 @@ class CheckinPointListItem extends StatelessWidget {
 
 class TerrainMindsetInput extends StatefulWidget {
   final TerrainMindset mindset;
-  const TerrainMindsetInput({Key key, @required this.mindset}) : super(key: key);
+  const TerrainMindsetInput({Key? key, required this.mindset}) : super(key: key);
 
   @override
   _TerrainMindsetInputState createState() => _TerrainMindsetInputState();
@@ -291,10 +293,12 @@ class _TerrainMindsetInputState extends State<TerrainMindsetInput> {
           height: 2,
           color: Colors.deepPurpleAccent,
         ),
-        onChanged: (MindsetType newValue) {
-          setState(() {
-            widget.mindset.set(newValue);
-          });
+        onChanged: (MindsetType? newValue) {
+          if (newValue != null) {
+            setState(() {
+              widget.mindset.set(newValue);
+            });
+          }
         },
         items: MindsetType.values.map<DropdownMenuItem<MindsetType>>((MindsetType value) {
           return DropdownMenuItem<MindsetType>(

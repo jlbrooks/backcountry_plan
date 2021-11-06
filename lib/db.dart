@@ -16,11 +16,11 @@ class DatabaseManager {
   DatabaseManager._privateConstructor();
   static final DatabaseManager instance = DatabaseManager._privateConstructor();
 
-  static Database _database;
+  static Database? _database;
   Future<Database> get database async {
-    if (_database != null) return _database;
+    if (_database != null) return _database!;
     _database = await _initDatabase();
-    return _database;
+    return _database!;
   }
 
   _initDatabase() async {

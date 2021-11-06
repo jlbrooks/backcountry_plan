@@ -1,11 +1,10 @@
 import 'dart:core';
-import 'dart:io';
 import 'package:backcountry_plan/db.dart';
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 
 abstract class BaseModel {
-  int id;
+  int? id;
 
   bool isPersisted() {
     return (this.id != null);
@@ -15,9 +14,9 @@ abstract class BaseModel {
 }
 
 abstract class BaseProvider<T extends BaseModel> {
-  String tableName;
-  String columnId;
-  List<String> columns;
+  late String tableName;
+  late String columnId;
+  late List<String> columns;
 
   Future save(T model) async {
     if (model.id == null) {
@@ -45,7 +44,7 @@ abstract class BaseProvider<T extends BaseModel> {
     return id;
   }
 
-  Future<T> get(int id) async {
+  Future<T?> get(int id) async {
     Database db = await DatabaseManager.instance.database;
     List<Map> maps = await db.query(
       tableName,
@@ -74,7 +73,7 @@ abstract class BaseProvider<T extends BaseModel> {
   }
 
   DateTime deserializeDateTime(String s) {
-    return DateTime.tryParse(s).toLocal();
+    return DateTime.tryParse(s)!.toLocal();
   }
 
   String serializeTimeOfDay(TimeOfDay td) {

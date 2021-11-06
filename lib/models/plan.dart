@@ -9,7 +9,7 @@ class PlanModel extends BaseModel {
   String forecast;
   int tripId;
 
-  PlanModel({id, this.keyMessage, this.forecast, this.tripId}) : super(id: id);
+  PlanModel({id, required this.keyMessage, required this.forecast, required this.tripId}) : super(id: id);
 }
 
 class PlanModelProvider extends BaseProvider<PlanModel> {
@@ -18,12 +18,7 @@ class PlanModelProvider extends BaseProvider<PlanModel> {
   static final String _columnKeyMessage = "key_message";
   static final String _columnForecast = "forecast";
   static final String _columnTripId = "trip_id";
-  static final List<String> _columns = [
-    planColumnId,
-    _columnKeyMessage,
-    _columnForecast,
-    _columnTripId
-  ];
+  static final List<String> _columns = [planColumnId, _columnKeyMessage, _columnForecast, _columnTripId];
 
   static final String createStatement = '''
                                         CREATE TABLE $planTableName (
@@ -70,7 +65,7 @@ class PlanModelProvider extends BaseProvider<PlanModel> {
     );
   }
 
-  Future<PlanModel> getByTripId(int id) async {
+  Future<PlanModel?> getByTripId(int id) async {
     Database db = await DatabaseManager.instance.database;
     List<Map> maps = await db.query(
       tableName,

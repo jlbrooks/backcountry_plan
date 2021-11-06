@@ -10,7 +10,12 @@ class CheckinPointModel extends BaseModel {
   TimeOfDay time;
   int terrainPlanId;
 
-  CheckinPointModel({id, this.description, this.time, this.terrainPlanId}) : super(id: id);
+  CheckinPointModel({
+    id,
+    required this.description,
+    required this.time,
+    required this.terrainPlanId,
+  }) : super(id: id);
 
   CheckinPointModel.newForTerrainPlan(int terrainPlanId)
       : this.description = "",

@@ -13,15 +13,15 @@ class TerrainPlanModel extends BaseModel {
   TimeOfDay turnaroundTime;
   int planId;
 
-  TerrainPlanModel(
-      {id,
-      this.mindset,
-      this.areasToAvoid,
-      this.route,
-      this.turnaroundPoint,
-      this.turnaroundTime,
-      this.planId})
-      : super(id: id);
+  TerrainPlanModel({
+    id,
+    required this.mindset,
+    required this.areasToAvoid,
+    required this.route,
+    required this.turnaroundPoint,
+    required this.turnaroundTime,
+    required this.planId,
+  }) : super(id: id);
 
   TerrainPlanModel.newForPlan(int planId)
       : this.mindset = TerrainMindset(),
@@ -42,15 +42,7 @@ class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
   static final String _columnTurnaroundTime = "turnaround_time";
   static final String _columnPlanId = 'plan_id';
 
-  static final List<String> _columns = [
-    terrainPlanColumnId,
-    _columnMindset,
-    _columnAreasToAvoid,
-    _columnRoute,
-    _columnTurnaroundPoint,
-    _columnTurnaroundTime,
-    _columnPlanId
-  ];
+  static final List<String> _columns = [terrainPlanColumnId, _columnMindset, _columnAreasToAvoid, _columnRoute, _columnTurnaroundPoint, _columnTurnaroundTime, _columnPlanId];
 
   static final String createStatement = '''
                                         CREATE TABLE $terrainPlanTableName (
@@ -65,8 +57,7 @@ class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
                                         )
                                         ''';
 
-  static final TerrainPlanModelProvider _singleton =
-      TerrainPlanModelProvider._internal();
+  static final TerrainPlanModelProvider _singleton = TerrainPlanModelProvider._internal();
 
   factory TerrainPlanModelProvider() {
     return _singleton;
@@ -122,15 +113,11 @@ class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
 enum MindsetType { keepItSimple, limitExposure, stepItOut }
 
 extension MindsetTypeHelpers on MindsetType {
-  String toName() => TerrainMindset.mindsetTypeNames[this];
+  String toName() => TerrainMindset.mindsetTypeNames[this]!;
 }
 
 class TerrainMindset {
-  static final Map<MindsetType, String> mindsetTypeNames = {
-    MindsetType.keepItSimple: "Keep it simple",
-    MindsetType.limitExposure: "Limit Exposure",
-    MindsetType.stepItOut: "Step it out"
-  };
+  static final Map<MindsetType, String> mindsetTypeNames = {MindsetType.keepItSimple: "Keep it simple", MindsetType.limitExposure: "Limit Exposure", MindsetType.stepItOut: "Step it out"};
   MindsetType type;
 
   TerrainMindset() : type = MindsetType.keepItSimple;
