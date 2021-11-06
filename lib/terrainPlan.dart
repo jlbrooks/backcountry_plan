@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:backcountry_plan/checkinPoint.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/common.dart';
@@ -98,7 +101,12 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
     areasToAvoidController.text = widget.terrainPlan.areasToAvoid;
     turnaroundPointController.text = widget.terrainPlan.turnaroundPoint;
 
+    refreshCheckinPoints();
+  }
+
+  void refreshCheckinPoints() {
     CheckinPointModelProvider().getByTerrainPlanId(widget.terrainPlan.id!).then((_points) {
+      stderr.writeln("new points");
       setState(() {
         checkinPoints = _points;
       });
@@ -117,14 +125,18 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
     }
   }
 
-  _showCreateCheckinPage(BuildContext context) async {
-    print('new checkin');
-  }
+  _showEditCheckinPointPage(BuildContext context, CheckinPointModel? point) async {
+    if (point == null) {
+      point = CheckinPointModel.newForTerrainPlan(widget.terrainPlan.id!);
+    }
+    final result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return EditCheckinPointPage(checkinPoint: point!);
+    }));
 
-  _onCheckinPointTapped(BuildContext context, CheckinPointModel trip) async {
-    // await Navigator.push(context, MaterialPageRoute(builder: (context) {
-    //   return TripPage(trip: trip);
-    // }));
+    if (result != null) {
+      stderr.writeln("non null");
+      refreshCheckinPoints();
+    }
   }
 
   @override
@@ -132,9 +144,10 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
     var checkinPointList = checkinPoints.map((point) {
       return CheckinPointListItem(
         point: point,
-        onTapped: _onCheckinPointTapped,
+        onTapped: _showEditCheckinPointPage,
       );
     }).toList();
+    checkinPointList.sort((a, b) => a.point.time.compareTo(b.point.time));
 
     return Scaffold(
       appBar: AppBar(
@@ -183,7 +196,7 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
                   children: checkinPointList,
                 ),
                 ElevatedButton(
-                  onPressed: () => _showCreateCheckinPage(context),
+                  onPressed: () => _showEditCheckinPointPage(context, null),
                   child: Text('Add checkin point'),
                 ),
                 const SizedBox(height: 10),
@@ -260,7 +273,7 @@ class CheckinPointListItem extends StatelessWidget {
     return Card(
       child: ListTile(
         title: Text(point.description),
-        subtitle: Text(point.time.toString()),
+        subtitle: Text(point.time.format(context)),
         trailing: Icon(Icons.chevron_right),
         onTap: () {
           onTapped(context, point);

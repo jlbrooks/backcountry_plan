@@ -17,3 +17,13 @@ class SectionText extends StatelessWidget {
     );
   }
 }
+
+extension TimeOfDayExtension on TimeOfDay {
+  int compareTo(TimeOfDay other) {
+    if (this.hour < other.hour) return -1;
+    if (this.hour > other.hour) return 1;
+    if (this.minute < other.minute) return -1;
+    if (this.minute > other.minute) return 1;
+    return 0;
+  }
+}
