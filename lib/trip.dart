@@ -12,68 +12,16 @@ class TripListPage extends StatefulWidget {
 }
 
 class TripListPageState extends State<TripListPage> {
-  late Future<List<TripModel>> futureTripList;
+  List<TripModel> tripList = [];
 
   @override
   void initState() {
     super.initState();
-
-    futureTripList = TripModelProvider().all();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<TripModel>>(
-      future: futureTripList,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return TripListView(
-            trips: snapshot.data!,
-            isLoading: false,
-          );
-        } else if (snapshot.hasError) {
-          return Text("Error: ${snapshot.error}");
-        }
-
-        return Text("Loading");
-      },
-    );
-  }
-}
-
-class TripListView extends StatefulWidget {
-  final List<TripModel> trips;
-  final bool isLoading;
-
-  TripListView({Key? key, required this.trips, required this.isLoading}) : super(key: key);
-
-  @override
-  TripListViewState createState() => TripListViewState(trips: trips, isLoading: isLoading);
-}
-
-class TripListViewState extends State<TripListView> {
-  static final String title = "My trips";
-  final List<TripModel> trips;
-  final bool isLoading;
-
-  TripListViewState({Key? key, required this.trips, required this.isLoading});
-
-  @override
-  Widget build(BuildContext context) {
-    var tripList = ListView.builder(
-      itemCount: trips.length,
-      itemBuilder: (context, index) => TripListItem(trip: trips[index], onTapped: _onTripPressed),
-    );
-
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: tripList,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => {_onAddTripPressed(context)},
-        tooltip: 'New trip',
-        child: Icon(Icons.add),
-      ),
-    );
+    TripModelProvider().all().then((trips) {
+      setState(() {
+        this.tripList = trips;
+      });
+    });
   }
 
   _onTripPressed(BuildContext context, TripModel trip) async {
@@ -93,9 +41,27 @@ class TripListViewState extends State<TripListView> {
 
     if (trip.isPersisted()) {
       setState(() {
-        trips.add(trip);
+        this.tripList.add(trip);
       });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var tripList = ListView.builder(
+      itemCount: this.tripList.length,
+      itemBuilder: (context, index) => TripListItem(trip: this.tripList[index], onTapped: _onTripPressed),
+    );
+
+    return Scaffold(
+      appBar: AppBar(title: Text('My trips')),
+      body: tripList,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => {_onAddTripPressed(context)},
+        tooltip: 'New trip',
+        child: Icon(Icons.add),
+      ),
+    );
   }
 }
 
