@@ -88,9 +88,19 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
 
   @override
   Widget build(BuildContext context) {
-    var checkinPointList = ListView.builder(
-      itemCount: checkinPoints.length,
-      itemBuilder: (context, index) => CheckinPointListItem(point: checkinPoints[index], onTapped: _showEditCheckinPointPage),
+    var checkinPointListView = DeleteableListView(
+      list: checkinPoints,
+      confirmDeleteTitle: 'Delete checkin point?',
+      confirmDeleteBodyBuilder: (CheckinPointModel item) => 'Are you sure you would like to delete the checkin point at ${item.time.format(context)}?',
+      onDelete: (CheckinPointModel item, int index) {
+        // Delete from database
+        CheckinPointModelProvider().delete(item);
+        // Remove from the trip list
+        setState(() {
+          checkinPoints.removeAt(index);
+        });
+      },
+      itemBuilder: (CheckinPointModel item) => CheckinPointListItem(point: item, onTapped: _showEditCheckinPointPage),
     );
 
     return FormColumnScreen(
@@ -140,7 +150,7 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
           subTitle: 'What are the checkin points along the way?',
         ),
         Expanded(
-          child: checkinPointList,
+          child: checkinPointListView,
         ),
       ],
     );

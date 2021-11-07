@@ -1,3 +1,4 @@
+import 'package:backcountry_plan/models/base.dart';
 import 'package:flutter/material.dart';
 
 class FormColumnScreen extends StatelessWidget {
@@ -179,6 +180,79 @@ class TitledSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: children,
       ),
+    );
+  }
+}
+
+class DeleteableListView<T extends BaseModel> extends StatelessWidget {
+  final List<T> list;
+  final String confirmDeleteTitle;
+  final String Function(T) confirmDeleteBodyBuilder;
+  final Function(T, int) onDelete;
+  final Widget Function(T) itemBuilder;
+  const DeleteableListView({
+    Key? key,
+    required this.list,
+    required this.confirmDeleteTitle,
+    required this.confirmDeleteBodyBuilder,
+    required this.onDelete,
+    required this.itemBuilder,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: this.list.length,
+      itemBuilder: (context, index) {
+        final item = this.list[index];
+        return Dismissible(
+          key: Key(item.id.toString()),
+          direction: DismissDirection.endToStart,
+          confirmDismiss: (direction) async {
+            return await showDialog<bool>(
+              context: context,
+              barrierDismissible: false, // user must tap button!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(confirmDeleteTitle),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(confirmDeleteBodyBuilder(item)),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('Delete'),
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          onDismissed: (direction) => onDelete(item, index),
+          background: Container(
+            color: Colors.red,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            alignment: AlignmentDirectional.centerEnd,
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+          child: itemBuilder(item),
+        );
+      },
     );
   }
 }

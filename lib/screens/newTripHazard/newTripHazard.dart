@@ -90,9 +90,19 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
 
   @override
   Widget build(BuildContext context) {
-    var problemList = ListView.builder(
-      itemCount: problems.length,
-      itemBuilder: (context, index) => ProblemSummary(problem: problems[index], onEditProblem: _onEditProblem),
+    var problemListView = DeleteableListView(
+      list: problems,
+      confirmDeleteTitle: 'Delete problem?',
+      confirmDeleteBodyBuilder: (AvalancheProblemModel item) => 'Are you sure you would like to delete this ${item.problemType.toString()} avalanche problem?',
+      onDelete: (AvalancheProblemModel item, int index) {
+        // Delete from database
+        AvalancheProblemModelProvider().delete(item);
+        // Remove from the trip list
+        setState(() {
+          problems.removeAt(index);
+        });
+      },
+      itemBuilder: (AvalancheProblemModel item) => ProblemSummary(problem: item, onEditProblem: _onEditProblem),
     );
 
     return FormColumnScreen(
@@ -119,7 +129,7 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
           subTitle: 'The avalanche problems for the day.',
         ),
         Expanded(
-          child: problemList,
+          child: problemListView,
         ),
       ],
     );

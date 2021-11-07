@@ -1,3 +1,4 @@
+import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/plan.dart';
@@ -50,65 +51,19 @@ class TripListPageState extends State<TripListPage> {
 
   @override
   Widget build(BuildContext context) {
-    var tripListView = ListView.builder(
-      itemCount: this.tripList.length,
-      itemBuilder: (context, index) {
-        final item = this.tripList[index];
-        return Dismissible(
-          key: Key(item.id.toString()),
-          direction: DismissDirection.endToStart,
-          confirmDismiss: (direction) async {
-            return await showDialog<bool>(
-              context: context,
-              barrierDismissible: false, // user must tap button!
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Delete trip?'),
-                  content: SingleChildScrollView(
-                    child: ListBody(
-                      children: <Widget>[
-                        Text("Are you sure you would like to delete trip \"${item.name}\"? This cannot be undone."),
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: const Text('Cancel'),
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                    ),
-                    TextButton(
-                      child: const Text('Delete'),
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-          onDismissed: (direction) async {
-            // Delete from database
-            TripModelProvider().delete(item);
-            // Remove from the trip list
-            setState(() {
-              tripList.removeAt(index);
-            });
-          },
-          background: Container(
-            color: Colors.red,
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            alignment: AlignmentDirectional.centerEnd,
-            child: Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
-          ),
-          child: TripListItem(trip: item, onTapped: _onTripPressed),
-        );
+    var tripListView = DeleteableListView(
+      list: this.tripList,
+      confirmDeleteTitle: 'Delete trip?',
+      confirmDeleteBodyBuilder: (TripModel item) => 'Are you sure you would like to delete trip \"${item.name}\"? This cannot be undone.',
+      onDelete: (TripModel item, int index) {
+        // Delete from database
+        TripModelProvider().delete(item);
+        // Remove from the trip list
+        setState(() {
+          this.tripList.removeAt(index);
+        });
       },
+      itemBuilder: (TripModel item) => TripListItem(trip: item, onTapped: _onTripPressed),
     );
 
     return Scaffold(
