@@ -19,6 +19,7 @@ class TripListPageState extends State<TripListPage> {
   void initState() {
     super.initState();
     TripModelProvider().all().then((trips) {
+      trips.sort((a, b) => -a.date.compareTo(b.date));
       setState(() {
         this.tripList = trips;
       });
