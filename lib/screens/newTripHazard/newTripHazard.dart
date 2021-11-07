@@ -1,6 +1,9 @@
 import 'package:backcountry_plan/models/plan.dart';
+import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
+import 'package:backcountry_plan/plan.dart';
+import 'package:backcountry_plan/problem.dart';
 import 'package:flutter/material.dart';
 
 class NewTripHazardPage extends StatefulWidget {
@@ -13,6 +16,7 @@ class NewTripHazardPage extends StatefulWidget {
 
 class _NewTripHazardPageState extends State<NewTripHazardPage> {
   late PlanModel plan;
+  List<AvalancheProblemModel> problems = [];
   final TextEditingController keyMessageTextController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
@@ -24,6 +28,11 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
       if (plan != null) {
         this.plan = plan;
         this.keyMessageTextController.text = plan.keyMessage;
+        AvalancheProblemModelProvider().getByPlanId(plan.id!).then((_problems) {
+          setState(() {
+            this.problems = _problems;
+          });
+        });
       } else {
         this.plan = PlanModel.newForTrip(widget.trip.id!);
         PlanModelProvider().save(this.plan);
@@ -31,7 +40,36 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
     });
   }
 
-  _onAddProblem(BuildContext context) async {}
+  _onAddProblem(BuildContext context) async {
+    var problem = AvalancheProblemModel.newForPlan(plan.id!);
+    final result = await Navigator.push<AvalancheProblemModel>(context, MaterialPageRoute(builder: (context) {
+      return ProblemEditPage(problem: problem);
+    }));
+
+    if (result != null) {
+      AvalancheProblemModelProvider().save(result).then((_) {
+        setState(() {
+          problems.add(result);
+        });
+      });
+    }
+  }
+
+  _onEditProblem(BuildContext context, AvalancheProblemModel problem) async {
+    final result = await Navigator.push<AvalancheProblemModel>(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return ProblemEditPage(problem: problem);
+      }),
+    );
+
+    if (result != null) {
+      AvalancheProblemModelProvider().save(result);
+      setState(() {
+        problems[problems.indexOf(result)] = result;
+      });
+    }
+  }
 
   _onNext(BuildContext context) async {}
 
@@ -43,6 +81,11 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
 
   @override
   Widget build(BuildContext context) {
+    var problemList = ListView.builder(
+      itemCount: problems.length,
+      itemBuilder: (context, index) => ProblemSummary(problem: problems[index], onEditProblem: _onEditProblem),
+    );
+
     return FormColumnScreen(
       titleText: 'Hazards',
       actionText: 'Next',
@@ -65,6 +108,9 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
         TitledSection(
           title: 'Avalanche problems',
           subTitle: 'The avalanche problems for the day.',
+        ),
+        Expanded(
+          child: problemList,
         ),
       ],
     );
