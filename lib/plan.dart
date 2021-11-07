@@ -43,14 +43,10 @@ class PlanPageState extends State<PlanPage> {
       });
     });
 
-    TerrainPlanModelProvider().getByPlanId(plan.id!).then((_plans) {
+    TerrainPlanModelProvider().getByPlanId(plan.id!).then((_plan) {
       setState(() {
-        if (_plans.isNotEmpty) {
-          if (_plans.length > 1) {
-            stderr.writeln("More than 1 plan found");
-          }
-
-          terrainPlan = _plans[0];
+        if (_plan != null) {
+          terrainPlan = _plan;
         }
       });
     });

@@ -146,7 +146,7 @@ class TitledSection extends StatelessWidget {
     Widget subTitleSection = Container();
     if (subTitle != null) {
       subTitleSection = Padding(
-        padding: const EdgeInsets.only(bottom: 12.0),
+        padding: const EdgeInsets.only(bottom: 4.0),
         child: Text(
           subTitle!,
           style: TextStyle(

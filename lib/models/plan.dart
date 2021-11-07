@@ -83,4 +83,9 @@ class PlanModelProvider extends BaseProvider<PlanModel> {
     }
     return null;
   }
+
+  Future<PlanModel> getOrNewByTripId(int id) async {
+    var result = await getByTripId(id);
+    return (result != null) ? result : PlanModel.newForTrip(id);
+  }
 }

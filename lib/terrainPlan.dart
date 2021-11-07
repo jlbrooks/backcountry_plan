@@ -301,10 +301,10 @@ class _TerrainMindsetInputState extends State<TerrainMindsetInput> {
         icon: Icon(Icons.arrow_downward),
         iconSize: 24,
         elevation: 16,
-        style: TextStyle(color: Colors.deepPurple),
+        style: TextStyle(color: Colors.black),
         underline: Container(
           height: 2,
-          color: Colors.deepPurpleAccent,
+          color: Colors.blueAccent,
         ),
         onChanged: (MindsetType? newValue) {
           if (newValue != null) {

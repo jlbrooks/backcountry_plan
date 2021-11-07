@@ -1,9 +1,7 @@
 import 'package:backcountry_plan/models/plan.dart';
-import 'package:backcountry_plan/models/problem.dart';
-import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
-import 'package:backcountry_plan/plan.dart';
-import 'package:backcountry_plan/problem.dart';
+import 'package:backcountry_plan/models/terrainPlan.dart';
+import 'package:backcountry_plan/screens/newTripRoute/newTripRoute.dart';
 import 'package:flutter/material.dart';
 
 class NewTripWeatherPage extends StatefulWidget {
@@ -24,7 +22,12 @@ class _NewTripWeatherPageState extends State<NewTripWeatherPage> {
     forecastTextController.text = widget.plan.forecast;
   }
 
-  _onNext(BuildContext context) {}
+  _onNext(BuildContext context) async {
+    var terrainPlan = await TerrainPlanModelProvider().getOrNewByPlanId(widget.plan.id!);
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return NewTripRoutePage(terrainPlan: terrainPlan);
+    }));
+  }
 
   Future<bool> _onWillPop() async {
     this.widget.plan.forecast = forecastTextController.text;

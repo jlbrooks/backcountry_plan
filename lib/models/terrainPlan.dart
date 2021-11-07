@@ -98,7 +98,7 @@ class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
     );
   }
 
-  Future<List<TerrainPlanModel>> getByPlanId(int id) async {
+  Future<TerrainPlanModel?> getByPlanId(int id) async {
     Database db = await DatabaseManager.instance.database;
     List<Map> maps = await db.query(
       tableName,
@@ -106,7 +106,16 @@ class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
       where: '$_columnPlanId = ?',
       whereArgs: [id],
     );
-    return maps.map((e) => fromMap(e)).toList();
+    if (maps.length > 0) {
+      print('More than 1 terrain plan found??');
+      return fromMap(maps.first);
+    }
+    return null;
+  }
+
+  Future<TerrainPlanModel> getOrNewByPlanId(int id) async {
+    var result = await getByPlanId(id);
+    return (result != null) ? result : TerrainPlanModel.newForPlan(id);
   }
 }
 
