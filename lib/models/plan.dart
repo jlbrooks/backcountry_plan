@@ -10,6 +10,11 @@ class PlanModel extends BaseModel {
   int tripId;
 
   PlanModel({id, required this.keyMessage, required this.forecast, required this.tripId}) : super(id: id);
+
+  PlanModel.newForTrip(int tripId)
+      : this.keyMessage = '',
+        this.forecast = '',
+        this.tripId = tripId;
 }
 
 class PlanModelProvider extends BaseProvider<PlanModel> {

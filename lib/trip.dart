@@ -1,6 +1,7 @@
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/plan.dart';
+import 'package:backcountry_plan/screens/newTrip/newTrip.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -31,15 +32,14 @@ class TripListPageState extends State<TripListPage> {
   }
 
   _onAddTripPressed(BuildContext context) async {
-    final trip = TripModel.create();
-    await Navigator.push<TripModel>(
+    var trip = await Navigator.push<TripModel>(
       context,
       MaterialPageRoute(builder: (context) {
-        return EditTripPage(trip: trip);
+        return NewTripPage();
       }),
     );
 
-    if (trip.isPersisted()) {
+    if (trip != null && trip.isPersisted()) {
       setState(() {
         this.tripList.add(trip);
       });
