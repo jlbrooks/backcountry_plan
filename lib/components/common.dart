@@ -1,16 +1,66 @@
 import 'package:flutter/material.dart';
 
+class FormColumnScreen extends StatelessWidget {
+  final String titleText;
+  final String actionText;
+  final Function(BuildContext) onAction;
+  final List<Widget> children;
+  final GlobalKey<FormState> formKey;
+  final Future<bool> Function()? onWillPop;
+  final Widget? floatingActionButton;
+
+  FormColumnScreen({
+    Key? key,
+    required this.titleText,
+    required this.actionText,
+    required this.onAction,
+    required this.children,
+    required this.formKey,
+    this.onWillPop,
+    this.floatingActionButton,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BasicScreen(
+      titleText: titleText,
+      actionText: actionText,
+      onAction: onAction,
+      onWillPop: onWillPop,
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: children,
+        ),
+      ),
+      floatingActionButton: floatingActionButton,
+    );
+  }
+}
+
 class BasicScreen extends StatelessWidget {
   final String titleText;
   final String actionText;
   final Function(BuildContext) onAction;
   final Widget? child;
   final Future<bool> Function()? onWillPop;
+  final Widget? floatingActionButton;
 
-  const BasicScreen({Key? key, required this.titleText, required this.actionText, required this.onAction, this.child, this.onWillPop}) : super(key: key);
+  const BasicScreen({
+    Key? key,
+    required this.titleText,
+    required this.actionText,
+    required this.onAction,
+    this.child,
+    this.onWillPop,
+    this.floatingActionButton,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Widget? actionButton;
+
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
@@ -30,6 +80,7 @@ class BasicScreen extends StatelessWidget {
           padding: const EdgeInsets.all(12.0),
           child: child,
         ),
+        floatingActionButton: floatingActionButton,
       ),
     );
   }
@@ -82,8 +133,8 @@ class TextInputTitledSection extends StatelessWidget {
 class TitledSection extends StatelessWidget {
   final String title;
   final String? subTitle;
-  final Widget child;
-  const TitledSection({Key? key, required this.title, this.subTitle, required this.child}) : super(key: key);
+  final Widget? child;
+  const TitledSection({Key? key, required this.title, this.subTitle, this.child}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -99,24 +150,29 @@ class TitledSection extends StatelessWidget {
         ),
       );
     }
+    List<Widget> children = [
+      Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: Text(
+          title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      subTitleSection
+    ];
+
+    if (child != null) {
+      children.add(child!);
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
-            child: Text(
-              title,
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          subTitleSection,
-          child,
-        ],
+        children: children,
       ),
     );
   }

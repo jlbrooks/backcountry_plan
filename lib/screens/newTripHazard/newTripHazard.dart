@@ -14,6 +14,7 @@ class NewTripHazardPage extends StatefulWidget {
 class _NewTripHazardPageState extends State<NewTripHazardPage> {
   late PlanModel plan;
   final TextEditingController keyMessageTextController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -30,6 +31,8 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
     });
   }
 
+  _onAddProblem(BuildContext context) async {}
+
   _onNext(BuildContext context) async {}
 
   Future<bool> _onWillPop() async {
@@ -40,22 +43,30 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BasicScreen(
+    return FormColumnScreen(
       titleText: 'Hazards',
       actionText: 'Next',
       onAction: _onNext,
       onWillPop: _onWillPop,
-      child: Column(
-        children: [
-          TextInputTitledSection(
-            title: 'Key message',
-            subTitle: "What is the avalanche advisory's key message?",
-            hintText: 'Stay off of sun-affected southern aspects',
-            validationText: 'Please enter a key message',
-            controller: keyMessageTextController,
-          ),
-        ],
+      formKey: _formKey,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => {_onAddProblem(context)},
+        label: Text('Add problem'),
+        icon: Icon(Icons.add),
       ),
+      children: [
+        TextInputTitledSection(
+          title: 'Key message',
+          subTitle: "What is the avalanche advisory's key message?",
+          hintText: 'Stay off of sun-affected southern aspects',
+          validationText: 'Please enter a key message',
+          controller: keyMessageTextController,
+        ),
+        TitledSection(
+          title: 'Avalanche problems',
+          subTitle: 'The avalanche problems for the day.',
+        ),
+      ],
     );
   }
 }

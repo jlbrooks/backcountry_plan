@@ -48,45 +48,40 @@ class _NewTripPageState extends State<NewTripPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BasicScreen(
+    return FormColumnScreen(
       titleText: 'New trip',
       actionText: 'Next',
       onAction: _onNext,
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            TextInputTitledSection(
-              title: 'Where are you headed?',
-              subTitle: 'This is the name of your trip',
-              hintText: 'Mt. Everest',
-              validationText: 'Please enter a name',
-              controller: tripNameTextController,
-            ),
-            TitledSection(
-              title: 'When is the trip?',
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                      DateFormat.yMMMd().format(trip.date),
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => _showDatePicker(context),
-                      child: Text('Change date'),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+      formKey: _formKey,
+      children: <Widget>[
+        TextInputTitledSection(
+          title: 'Where are you headed?',
+          subTitle: 'This is the name of your trip',
+          hintText: 'Mt. Everest',
+          validationText: 'Please enter a name',
+          controller: tripNameTextController,
         ),
-      ),
+        TitledSection(
+          title: 'When is the trip?',
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  DateFormat.yMMMd().format(trip.date),
+                  style: TextStyle(fontSize: 14),
+                ),
+              ),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () => _showDatePicker(context),
+                  child: Text('Change date'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
