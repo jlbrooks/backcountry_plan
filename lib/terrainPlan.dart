@@ -106,7 +106,6 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
 
   void refreshCheckinPoints() {
     CheckinPointModelProvider().getByTerrainPlanId(widget.terrainPlan.id!).then((_points) {
-      stderr.writeln("new points");
       setState(() {
         checkinPoints = _points;
       });
@@ -134,7 +133,6 @@ class _TerrainPlanEditPageState extends State<TerrainPlanEditPage> {
     }));
 
     if (result != null) {
-      stderr.writeln("non null");
       refreshCheckinPoints();
     }
   }

@@ -21,6 +21,14 @@ class CheckinPointModel extends BaseModel {
       : this.description = "",
         this.time = TimeOfDay.now(),
         this.terrainPlanId = terrainPlanId;
+
+  int compareTo(CheckinPointModel other) {
+    if (this.time.hour < other.time.hour) return -1;
+    if (this.time.hour > other.time.hour) return 1;
+    if (this.time.minute < other.time.minute) return -1;
+    if (this.time.minute > other.time.minute) return 1;
+    return 0;
+  }
 }
 
 class CheckinPointModelProvider extends BaseProvider<CheckinPointModel> {

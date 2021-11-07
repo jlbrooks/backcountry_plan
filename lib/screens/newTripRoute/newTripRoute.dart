@@ -1,5 +1,6 @@
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/components/common.dart';
+import 'package:backcountry_plan/screens/newTripTiming/newTripTiming.dart';
 import 'package:backcountry_plan/terrainPlan.dart';
 import 'package:flutter/material.dart';
 
@@ -24,12 +25,23 @@ class _NewTripRoutePageState extends State<NewTripRoutePage> {
     areasToAvoidController.text = widget.terrainPlan.areasToAvoid;
   }
 
-  _onNext(BuildContext context) {}
-
-  Future<bool> _onWillPop() async {
+  _save() async {
     widget.terrainPlan.route = routeController.text;
     widget.terrainPlan.areasToAvoid = areasToAvoidController.text;
     await TerrainPlanModelProvider().save(widget.terrainPlan);
+  }
+
+  _onNext(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      await _save();
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return NewTripTimingPage(terrainPlan: widget.terrainPlan);
+      }));
+    }
+  }
+
+  Future<bool> _onWillPop() async {
+    await _save();
     return true;
   }
 
@@ -49,7 +61,7 @@ class _NewTripRoutePageState extends State<NewTripRoutePage> {
         ),
         TextInputTitledSection(
           title: 'Route',
-          subTitle: "Describe your route options that consider today's group, weather, and avalanche concerns.",
+          subTitle: "Describe your route options that consider today's group, weather, and avalanche concerns. Note any important precautions on the route.",
           hintText: 'Go up, ski down.',
           validationText: 'Please enter a route plan',
           controller: routeController,

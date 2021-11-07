@@ -23,10 +23,12 @@ class _NewTripWeatherPageState extends State<NewTripWeatherPage> {
   }
 
   _onNext(BuildContext context) async {
-    var terrainPlan = await TerrainPlanModelProvider().getOrNewByPlanId(widget.plan.id!);
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return NewTripRoutePage(terrainPlan: terrainPlan);
-    }));
+    if (formKey.currentState!.validate()) {
+      var terrainPlan = await TerrainPlanModelProvider().getOrNewByPlanId(widget.plan.id!);
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return NewTripRoutePage(terrainPlan: terrainPlan);
+      }));
+    }
   }
 
   Future<bool> _onWillPop() async {
