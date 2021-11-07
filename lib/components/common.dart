@@ -94,6 +94,8 @@ class TextInputTitledSection extends StatelessWidget {
   final String validationText;
   final Function(String)? onChanged;
   final TextEditingController controller;
+  final int minLines;
+  final int maxLines;
 
   const TextInputTitledSection({
     Key? key,
@@ -103,6 +105,8 @@ class TextInputTitledSection extends StatelessWidget {
     required this.validationText,
     required this.controller,
     this.onChanged,
+    this.minLines = 1,
+    this.maxLines = 3,
   }) : super(key: key);
 
   @override
@@ -113,11 +117,12 @@ class TextInputTitledSection extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         textCapitalization: TextCapitalization.sentences,
+        minLines: minLines,
+        maxLines: maxLines,
         decoration: InputDecoration(
           border: const OutlineInputBorder(),
           hintText: hintText,
         ),
-        maxLines: 1,
         validator: (value) {
           if (value == null || value.isEmpty) {
             return validationText;

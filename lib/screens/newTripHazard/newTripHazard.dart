@@ -4,6 +4,7 @@ import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/plan.dart';
 import 'package:backcountry_plan/problem.dart';
+import 'package:backcountry_plan/screens/newTripWeather/newTripWeather.dart';
 import 'package:flutter/material.dart';
 
 class NewTripHazardPage extends StatefulWidget {
@@ -18,7 +19,7 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
   late PlanModel plan;
   List<AvalancheProblemModel> problems = [];
   final TextEditingController keyMessageTextController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -71,7 +72,15 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
     }
   }
 
-  _onNext(BuildContext context) async {}
+  _onNext(BuildContext context) async {
+    if (formKey.currentState!.validate()) {
+      this.plan.keyMessage = keyMessageTextController.text;
+      await PlanModelProvider().save(this.plan);
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return NewTripWeatherPage(plan: this.plan);
+      }));
+    }
+  }
 
   Future<bool> _onWillPop() async {
     this.plan.keyMessage = keyMessageTextController.text;
@@ -91,7 +100,7 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
       actionText: 'Next',
       onAction: _onNext,
       onWillPop: _onWillPop,
-      formKey: _formKey,
+      formKey: formKey,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => {_onAddProblem(context)},
         label: Text('Add problem'),
