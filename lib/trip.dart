@@ -50,14 +50,70 @@ class TripListPageState extends State<TripListPage> {
 
   @override
   Widget build(BuildContext context) {
-    var tripList = ListView.builder(
+    var tripListView = ListView.builder(
       itemCount: this.tripList.length,
-      itemBuilder: (context, index) => TripListItem(trip: this.tripList[index], onTapped: _onTripPressed),
+      itemBuilder: (context, index) {
+        final item = this.tripList[index];
+        return Dismissible(
+          key: Key(item.id.toString()),
+          direction: DismissDirection.endToStart,
+          confirmDismiss: (direction) async {
+            return await showDialog<bool>(
+              context: context,
+              barrierDismissible: false, // user must tap button!
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text('Delete trip?'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text("Are you sure you would like to delete trip \"${item.name}\"? This cannot be undone."),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Cancel'),
+                      onPressed: () {
+                        Navigator.of(context).pop(false);
+                      },
+                    ),
+                    TextButton(
+                      child: const Text('Delete'),
+                      onPressed: () {
+                        Navigator.of(context).pop(true);
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+          onDismissed: (direction) async {
+            // Delete from database
+            TripModelProvider().delete(item);
+            // Remove from the trip list
+            setState(() {
+              tripList.removeAt(index);
+            });
+          },
+          background: Container(
+            color: Colors.red,
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            alignment: AlignmentDirectional.centerEnd,
+            child: Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+          ),
+          child: TripListItem(trip: item, onTapped: _onTripPressed),
+        );
+      },
     );
 
     return Scaffold(
       appBar: AppBar(title: Text('My trips')),
-      body: tripList,
+      body: tripListView,
       floatingActionButton: FloatingActionButton(
         onPressed: () => {_onAddTripPressed(context)},
         tooltip: 'New trip',

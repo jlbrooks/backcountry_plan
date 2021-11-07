@@ -26,6 +26,15 @@ abstract class BaseProvider<T extends BaseModel> {
     }
   }
 
+  Future<void> delete(T model) async {
+    var db = await DatabaseManager.instance.database;
+    await db.delete(
+      tableName,
+      where: '$columnId = ?',
+      whereArgs: [model.id],
+    );
+  }
+
   Future<int> _insert(T model) async {
     var db = await DatabaseManager.instance.database;
     int id = await db.insert(tableName, toMap(model));
