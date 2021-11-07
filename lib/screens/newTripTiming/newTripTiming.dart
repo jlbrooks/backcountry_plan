@@ -3,6 +3,7 @@ import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/terrainPlan.dart';
+import 'package:backcountry_plan/trip.dart';
 import 'package:flutter/material.dart';
 
 class NewTripTimingPage extends StatefulWidget {
@@ -31,13 +32,20 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
     });
   }
 
+  _save() async {
+    widget.terrainPlan.turnaroundPoint = turnaroundPointController.text;
+    await TerrainPlanModelProvider().save(widget.terrainPlan);
+  }
+
   _onNext(BuildContext context) async {
-    if (formKey.currentState!.validate()) {}
+    if (formKey.currentState!.validate()) {
+      await _save();
+      Navigator.popUntil(context, (route) => route.isFirst);
+    }
   }
 
   Future<bool> _onWillPop() async {
-    this.widget.terrainPlan.turnaroundPoint = turnaroundPointController.text;
-    await TerrainPlanModelProvider().save(widget.terrainPlan);
+    await _save();
     return true;
   }
 
@@ -87,7 +95,7 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
 
     return FormColumnScreen(
       titleText: 'Trip timing',
-      actionText: 'Next',
+      actionText: 'Save trip',
       onAction: _onNext,
       onWillPop: _onWillPop,
       formKey: formKey,

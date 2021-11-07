@@ -28,7 +28,7 @@ class DatabaseManager {
     String databasesPath = await getDatabasesPath();
     stderr.writeln("Opening db at $databasesPath");
     String path = join(databasesPath, _databaseName);
-    //await deleteDatabase(path);
+    // await deleteDatabase(path);
     // Open the database. Can also add an onUpdate callback parameter.
     return await openDatabase(
       path,

@@ -33,18 +33,19 @@ class TripListPageState extends State<TripListPage> {
   }
 
   _onAddTripPressed(BuildContext context) async {
-    var trip = await Navigator.push<TripModel>(
+    await Navigator.push<TripModel>(
       context,
       MaterialPageRoute(builder: (context) {
         return NewTripPage();
       }),
     );
 
-    if (trip != null && trip.isPersisted()) {
+    TripModelProvider().all().then((trips) {
+      trips.sort((a, b) => -a.date.compareTo(b.date));
       setState(() {
-        this.tripList.add(trip);
+        this.tripList = trips;
       });
-    }
+    });
   }
 
   @override
