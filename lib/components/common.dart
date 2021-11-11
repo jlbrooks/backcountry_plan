@@ -30,8 +30,8 @@ class FormColumnScreen extends StatelessWidget {
       onWillPop: onWillPop,
       child: Form(
         key: formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          physics: const ScrollPhysics(),
           children: children,
         ),
       ),
@@ -203,6 +203,8 @@ class DeleteableListView<T extends BaseModel> extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: this.list.length,
+      shrinkWrap: true,
+      physics: ClampingScrollPhysics(),
       itemBuilder: (context, index) {
         final item = this.list[index];
         return Dismissible(
