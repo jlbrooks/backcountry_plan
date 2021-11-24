@@ -36,7 +36,7 @@ class TripModel {
         this.date = DateTime.now(),
         this.keyMessage = "",
         this.forecast = "",
-        this.terrainPlan = TerrainPlanModel.newForPlan(-1),
+        this.terrainPlan = TerrainPlanModel.create(),
         this.problems = [],
         this.checkinPoints = [];
 

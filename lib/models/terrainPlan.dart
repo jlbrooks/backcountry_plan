@@ -17,7 +17,7 @@ class TerrainPlanModel {
     required this.turnaroundTime,
   });
 
-  TerrainPlanModel.newForPlan(int planId)
+  TerrainPlanModel.create()
       : this.mindset = TerrainMindset(),
         this.areasToAvoid = "",
         this.route = "",
