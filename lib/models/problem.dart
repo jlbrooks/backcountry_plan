@@ -1,10 +1,6 @@
 import 'dart:core';
-import 'package:sqflite/sqflite.dart';
-import 'package:backcountry_plan/db.dart';
-import 'package:backcountry_plan/models/base.dart';
-import 'package:backcountry_plan/models/plan.dart';
 
-class AvalancheProblemModel extends BaseModel {
+class AvalancheProblemModel {
   AvalancheProblemType problemType;
   AvalancheProblemSize size;
   ProblemElevation elevation;
@@ -14,27 +10,22 @@ class AvalancheProblemModel extends BaseModel {
   String dangerTrendTiming;
   String notes;
 
-  int? planId;
-
-  AvalancheProblemModel(
-      {id,
-      AvalancheProblemType? problemType,
-      AvalancheProblemSize? size,
-      ProblemElevation? elevation,
-      ProblemAspect? aspect,
-      ProblemLikelihood? likelihood,
-      this.terrainFeatures = "",
-      this.dangerTrendTiming = "",
-      this.notes = "",
-      this.planId})
-      : this.problemType = problemType ?? AvalancheProblemType(),
+  AvalancheProblemModel({
+    AvalancheProblemType? problemType,
+    AvalancheProblemSize? size,
+    ProblemElevation? elevation,
+    ProblemAspect? aspect,
+    ProblemLikelihood? likelihood,
+    this.terrainFeatures = "",
+    this.dangerTrendTiming = "",
+    this.notes = "",
+  })  : this.problemType = problemType ?? AvalancheProblemType(),
         this.size = size ?? AvalancheProblemSize(),
         this.elevation = elevation ?? ProblemElevation(),
         this.aspect = aspect ?? ProblemAspect(),
-        this.likelihood = likelihood ?? ProblemLikelihood(),
-        super(id: id);
+        this.likelihood = likelihood ?? ProblemLikelihood();
 
-  AvalancheProblemModel.newForPlan(int planId)
+  AvalancheProblemModel.create()
       : this.problemType = AvalancheProblemType(),
         this.size = AvalancheProblemSize(),
         this.elevation = ProblemElevation(),
@@ -42,108 +33,29 @@ class AvalancheProblemModel extends BaseModel {
         this.likelihood = ProblemLikelihood(),
         this.terrainFeatures = "",
         this.dangerTrendTiming = "",
-        this.notes = "",
-        this.planId = planId;
-}
+        this.notes = "";
 
-class AvalancheProblemModelProvider extends BaseProvider<AvalancheProblemModel> {
-  static final String problemTableName = "avalanche_problem";
-  static final String problemColumnId = "id";
-  static final String _columnProblemType = "problem_type";
-  static final String _columnSize = "size";
-  static final String _columnElevation = "elevation";
-  static final String _columnAspect = "aspect";
-  static final String _columnLikelihood = "likelihood";
-  static final String _columnTerrainFeatures = "terrain_features";
-  static final String _columnDangerTrendTiming = "danger_trend_timing";
-  static final String _columnNotes = "notes";
-  static final String _columnPlanId = "plan_id";
+  AvalancheProblemModel.fromMap(Map<String, dynamic> map)
+      : this.problemType = AvalancheProblemType.deserialize(map["problemType"]),
+        this.size = AvalancheProblemSize.deserialize(map["size"]),
+        this.elevation = ProblemElevation.deserialize(map["elevation"]),
+        this.aspect = ProblemAspect.deserialize(map["aspect"]),
+        this.likelihood = ProblemLikelihood.deserialize(map["likelihood"]),
+        this.terrainFeatures = map["terrainFeatures"],
+        this.dangerTrendTiming = map["dangerTrendTiming"],
+        this.notes = map["notes"];
 
-  static final List<String> _columns = [
-    problemColumnId,
-    _columnProblemType,
-    _columnSize,
-    _columnElevation,
-    _columnAspect,
-    _columnLikelihood,
-    _columnTerrainFeatures,
-    _columnDangerTrendTiming,
-    _columnNotes,
-    _columnPlanId
-  ];
-
-  static final String createStatement = '''
-                                        CREATE TABLE $problemTableName (
-                                          $problemColumnId INTEGER PRIMARY KEY,
-                                          $_columnProblemType TEXT,
-                                          $_columnSize TEXT,
-                                          $_columnElevation TEXT,
-                                          $_columnAspect TEXT,
-                                          $_columnLikelihood TEXT,
-                                          $_columnTerrainFeatures TEXT,
-                                          $_columnDangerTrendTiming TEXT,
-                                          $_columnNotes TEXT,
-                                          $_columnPlanId INTEGER,
-                                          FOREIGN KEY ($_columnPlanId) REFERENCES ${PlanModelProvider.planTableName}(${PlanModelProvider.planColumnId})
-                                        )
-                                        ''';
-
-  static final AvalancheProblemModelProvider _singleton = AvalancheProblemModelProvider._internal();
-
-  factory AvalancheProblemModelProvider() {
-    return _singleton;
-  }
-
-  AvalancheProblemModelProvider._internal() {
-    tableName = problemTableName;
-    columnId = problemColumnId;
-    columns = _columns;
-  }
-
-  Map<String, dynamic> toMap(AvalancheProblemModel problem) {
-    var map = <String, dynamic>{
-      _columnPlanId: problem.planId,
-      _columnProblemType: problem.problemType.serialize(),
-      _columnSize: problem.size.serialize(),
-      _columnElevation: problem.elevation.serialize(),
-      _columnAspect: problem.aspect.serialize(),
-      _columnLikelihood: problem.likelihood.serialize(),
-      _columnTerrainFeatures: problem.terrainFeatures,
-      _columnDangerTrendTiming: problem.dangerTrendTiming,
-      _columnNotes: problem.notes
+  Map<String, dynamic> toMap() {
+    return {
+      "problemType": this.problemType.serialize(),
+      "size": this.size.serialize(),
+      "elevation": this.elevation.serialize(),
+      "aspect": this.aspect.serialize(),
+      "likelihood": this.likelihood.serialize(),
+      "terrainFeatures": this.terrainFeatures,
+      "dangerTrendTiming": this.dangerTrendTiming,
+      "notes": this.notes
     };
-
-    if (problem.id != null) {
-      map[columnId] = problem.id;
-    }
-
-    return map;
-  }
-
-  AvalancheProblemModel fromMap(Map e) {
-    return AvalancheProblemModel(
-      id: e[columnId],
-      problemType: AvalancheProblemType.deserialize(e[_columnProblemType]),
-      size: AvalancheProblemSize.deserialize(e[_columnSize]),
-      elevation: ProblemElevation.deserialize(e[_columnElevation]),
-      aspect: ProblemAspect.deserialize(e[_columnAspect]),
-      likelihood: ProblemLikelihood.deserialize(e[_columnLikelihood]),
-      terrainFeatures: e[_columnTerrainFeatures],
-      dangerTrendTiming: e[_columnDangerTrendTiming],
-      notes: e[_columnNotes],
-      planId: e[_columnPlanId],
-    );
-  }
-
-  Future<List<AvalancheProblemModel>> getByPlanId(int id) async {
-    Database db = await DatabaseManager.instance.database;
-    List<Map> maps = await db.query(
-      tableName,
-      columns: columns,
-      where: '$_columnPlanId = ?',
-      whereArgs: [id],
-    );
-    return maps.map((e) => fromMap(e)).toList();
   }
 }
 

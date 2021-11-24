@@ -1,121 +1,44 @@
 import 'dart:core';
+import 'package:backcountry_plan/models/helpers.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:backcountry_plan/db.dart';
-import 'package:backcountry_plan/models/base.dart';
-import 'package:backcountry_plan/models/plan.dart';
 
-class TerrainPlanModel extends BaseModel {
+class TerrainPlanModel {
   TerrainMindset mindset;
   String areasToAvoid;
   String route;
   String turnaroundPoint;
   TimeOfDay turnaroundTime;
-  int planId;
 
   TerrainPlanModel({
-    id,
     required this.mindset,
     required this.areasToAvoid,
     required this.route,
     required this.turnaroundPoint,
     required this.turnaroundTime,
-    required this.planId,
-  }) : super(id: id);
+  });
 
   TerrainPlanModel.newForPlan(int planId)
       : this.mindset = TerrainMindset(),
         this.areasToAvoid = "",
         this.route = "",
         this.turnaroundPoint = "",
-        this.turnaroundTime = TimeOfDay.now(),
-        this.planId = planId;
-}
+        this.turnaroundTime = TimeOfDay.now();
 
-class TerrainPlanModelProvider extends BaseProvider<TerrainPlanModel> {
-  static final String terrainPlanTableName = "terrain_plan";
-  static final String terrainPlanColumnId = "id";
-  static final String _columnMindset = "mindset";
-  static final String _columnAreasToAvoid = "areas_to_avoid";
-  static final String _columnRoute = "route";
-  static final String _columnTurnaroundPoint = "turnaround_point";
-  static final String _columnTurnaroundTime = "turnaround_time";
-  static final String _columnPlanId = 'plan_id';
+  TerrainPlanModel.fromMap(Map<String, dynamic> map)
+      : this.mindset = TerrainMindset.deserialize(map["mindset"]),
+        this.areasToAvoid = map["areasToAvoid"],
+        this.route = map["route"],
+        this.turnaroundPoint = map["turnaroundPoint"],
+        this.turnaroundTime = deserializeTimeOfDay(map["turnaroundTime"]);
 
-  static final List<String> _columns = [terrainPlanColumnId, _columnMindset, _columnAreasToAvoid, _columnRoute, _columnTurnaroundPoint, _columnTurnaroundTime, _columnPlanId];
-
-  static final String createStatement = '''
-                                        CREATE TABLE $terrainPlanTableName (
-                                          $terrainPlanColumnId INTEGER PRIMARY KEY,
-                                          $_columnMindset TEXT,
-                                          $_columnAreasToAvoid TEXT,
-                                          $_columnRoute TEXT,
-                                          $_columnTurnaroundPoint TEXT,
-                                          $_columnTurnaroundTime TEXT,
-                                          $_columnPlanId INTEGER,
-                                          FOREIGN KEY ($_columnPlanId) REFERENCES ${PlanModelProvider.planTableName}(${PlanModelProvider.planColumnId})
-                                        )
-                                        ''';
-
-  static final TerrainPlanModelProvider _singleton = TerrainPlanModelProvider._internal();
-
-  factory TerrainPlanModelProvider() {
-    return _singleton;
-  }
-
-  TerrainPlanModelProvider._internal() {
-    tableName = terrainPlanTableName;
-    columnId = terrainPlanColumnId;
-    columns = _columns;
-  }
-
-  Map<String, dynamic> toMap(TerrainPlanModel terrainPlan) {
-    var map = <String, dynamic>{
-      _columnPlanId: terrainPlan.planId,
-      _columnMindset: terrainPlan.mindset.serialize(),
-      _columnAreasToAvoid: terrainPlan.areasToAvoid,
-      _columnRoute: terrainPlan.route,
-      _columnTurnaroundPoint: terrainPlan.turnaroundPoint,
-      _columnTurnaroundTime: serializeTimeOfDay(terrainPlan.turnaroundTime),
+  Map<String, dynamic> toMap() {
+    return {
+      "mindset": this.mindset.serialize(),
+      "areasToAvoid": this.areasToAvoid,
+      "route": this.route,
+      "turnaroundPoint": this.turnaroundPoint,
+      "turnaroundTime": serializeTimeOfDay(this.turnaroundTime),
     };
-
-    if (terrainPlan.id != null) {
-      map[columnId] = terrainPlan.id;
-    }
-
-    return map;
-  }
-
-  TerrainPlanModel fromMap(Map e) {
-    return TerrainPlanModel(
-      id: e[columnId],
-      mindset: TerrainMindset.deserialize(e[_columnMindset]),
-      areasToAvoid: e[_columnAreasToAvoid],
-      route: e[_columnRoute],
-      turnaroundPoint: e[_columnTurnaroundPoint],
-      turnaroundTime: deserializeTimeOfDay(e[_columnTurnaroundTime]),
-      planId: e[_columnPlanId],
-    );
-  }
-
-  Future<TerrainPlanModel?> getByPlanId(int id) async {
-    Database db = await DatabaseManager.instance.database;
-    List<Map> maps = await db.query(
-      tableName,
-      columns: columns,
-      where: '$_columnPlanId = ?',
-      whereArgs: [id],
-    );
-    if (maps.length > 0) {
-      print('More than 1 terrain plan found??');
-      return fromMap(maps.first);
-    }
-    return null;
-  }
-
-  Future<TerrainPlanModel> getOrNewByPlanId(int id) async {
-    var result = await getByPlanId(id);
-    return (result != null) ? result : TerrainPlanModel.newForPlan(id);
   }
 }
 

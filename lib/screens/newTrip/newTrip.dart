@@ -40,7 +40,7 @@ class _NewTripPageState extends State<NewTripPage> {
   _onNext(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       trip.name = tripNameTextController.text;
-      await TripModelProvider().save(trip);
+      await TripStore().save(trip);
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return NewTripHazardPage(trip: trip);
       }));

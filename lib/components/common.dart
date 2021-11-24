@@ -1,4 +1,3 @@
-import 'package:backcountry_plan/models/base.dart';
 import 'package:flutter/material.dart';
 
 class TextInputTitledSection extends StatelessWidget {
@@ -98,7 +97,7 @@ class TitledSection extends StatelessWidget {
   }
 }
 
-class DeleteableListView<T extends BaseModel> extends StatelessWidget {
+class DeleteableListView<T> extends StatelessWidget {
   final List<T> list;
   final String confirmDeleteTitle;
   final String Function(T) confirmDeleteBodyBuilder;
@@ -122,7 +121,7 @@ class DeleteableListView<T extends BaseModel> extends StatelessWidget {
       itemBuilder: (context, index) {
         final item = this.list[index];
         return Dismissible(
-          key: Key(item.id.toString()),
+          key: Key(item.hashCode.toString()),
           direction: DismissDirection.endToStart,
           confirmDismiss: (direction) async {
             return await showDialog<bool>(

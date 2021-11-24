@@ -19,9 +19,7 @@ class _EditCheckinPointPageState extends State<EditCheckinPointPage> {
   }
 
   _onSave(BuildContext context) {
-    CheckinPointModelProvider().save(widget.checkinPoint).then((value) {
-      Navigator.pop(context, widget.checkinPoint);
-    });
+    Navigator.pop(context, widget.checkinPoint);
   }
 
   Future<void> _showCheckinTimePicker(BuildContext context) async {

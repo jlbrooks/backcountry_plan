@@ -1,7 +1,5 @@
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/models/trip.dart';
-import 'package:backcountry_plan/models/plan.dart';
-import 'package:backcountry_plan/plan.dart';
 import 'package:backcountry_plan/screens/newTrip/newTrip.dart';
 import 'package:backcountry_plan/screens/tripSummary/tripSummary.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +18,7 @@ class TripListPageState extends State<TripListPage> {
   @override
   void initState() {
     super.initState();
-    TripModelProvider().all().then((trips) {
+    TripStore().all().then((trips) {
       trips.sort((a, b) => -a.date.compareTo(b.date));
       setState(() {
         this.tripList = trips;
@@ -42,7 +40,7 @@ class TripListPageState extends State<TripListPage> {
       }),
     );
 
-    TripModelProvider().all().then((trips) {
+    TripStore().all().then((trips) {
       trips.sort((a, b) => -a.date.compareTo(b.date));
       setState(() {
         this.tripList = trips;
@@ -58,7 +56,7 @@ class TripListPageState extends State<TripListPage> {
       confirmDeleteBodyBuilder: (TripModel item) => 'Are you sure you would like to delete trip \"${item.name}\"? This cannot be undone.',
       onDelete: (TripModel item, int index) {
         // Delete from database
-        TripModelProvider().delete(item);
+        TripStore().delete(item);
         // Remove from the trip list
         setState(() {
           this.tripList.removeAt(index);
@@ -135,7 +133,7 @@ class _EditTripPageState extends State<EditTripPage> {
   _onSave(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
       widget.trip.name = tripNameTextController.text;
-      await TripModelProvider().save(widget.trip);
+      await TripStore().save(widget.trip);
       Navigator.pop(context);
     }
   }
@@ -201,115 +199,5 @@ class _EditTripPageState extends State<EditTripPage> {
         ),
       ),
     );
-  }
-}
-
-class TripPage extends StatefulWidget {
-  final TripModel trip;
-
-  TripPage({Key? key, required this.trip}) : super(key: key);
-
-  @override
-  TripPageState createState() => TripPageState(trip: trip);
-}
-
-class TripPageState extends State<TripPage> {
-  final TripModel trip;
-  PlanModel? plan;
-
-  TripPageState({required this.trip});
-
-  @override
-  void initState() {
-    PlanModelProvider().getByTripId(trip.id!).then((_plan) {
-      setState(() {
-        plan = _plan;
-      });
-    });
-    super.initState();
-  }
-
-  _onEdit(BuildContext context) async {
-    await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return EditTripPage(trip: trip);
-    }));
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(trip.name),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () => _onEdit(context),
-          )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [PlanSummary(plan: plan, onNavigateToPlan: _navigateAndEditPlan)],
-        ),
-      ),
-    );
-  }
-
-  _navigateAndEditPlan(BuildContext context) async {
-    if (plan == null) {
-      plan = PlanModel(tripId: trip.id!, keyMessage: '', forecast: '');
-      await PlanModelProvider().save(plan!);
-    }
-
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) {
-        return PlanPage(plan: plan!);
-      }),
-    );
-    if (result != null) {
-      PlanModelProvider().save(plan!);
-      setState(() {
-        plan = plan;
-      });
-    }
-  }
-}
-
-class PlanSummary extends StatelessWidget {
-  final PlanModel? plan;
-  final Function(BuildContext) onNavigateToPlan;
-
-  PlanSummary({required this.plan, required this.onNavigateToPlan});
-
-  @override
-  Widget build(BuildContext context) {
-    if (plan == null) {
-      return ElevatedButton(
-        onPressed: () {
-          onNavigateToPlan(context);
-        },
-        child: Text('Create plan'),
-      );
-    } else {
-      return Card(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: Icon(Icons.vpn_key),
-              title: Text('Key Message:'),
-              subtitle: Text(plan!.keyMessage),
-              trailing: Icon(Icons.chevron_right),
-              onTap: () {
-                onNavigateToPlan(context);
-              },
-            ),
-          ],
-        ),
-      );
-    }
   }
 }

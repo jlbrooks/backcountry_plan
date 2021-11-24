@@ -1,4 +1,5 @@
 import 'package:backcountry_plan/models/terrainPlan.dart';
+import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/screens/newTripTiming/newTripTiming.dart';
@@ -6,37 +7,40 @@ import 'package:backcountry_plan/terrainPlan.dart';
 import 'package:flutter/material.dart';
 
 class NewTripRoutePage extends StatefulWidget {
-  final TerrainPlanModel terrainPlan;
-  NewTripRoutePage({Key? key, required this.terrainPlan}) : super(key: key);
+  final TripModel trip;
+  NewTripRoutePage({Key? key, required this.trip}) : super(key: key);
 
   @override
-  _NewTripRoutePageState createState() => _NewTripRoutePageState();
+  _NewTripRoutePageState createState() => _NewTripRoutePageState(terrainPlan: trip.terrainPlan);
 }
 
 class _NewTripRoutePageState extends State<NewTripRoutePage> {
+  final TerrainPlanModel terrainPlan;
   final formKey = GlobalKey<FormState>();
   final TextEditingController routeController = TextEditingController();
   final TextEditingController areasToAvoidController = TextEditingController();
+
+  _NewTripRoutePageState({required this.terrainPlan});
 
   @override
   void initState() {
     super.initState();
 
-    routeController.text = widget.terrainPlan.route;
-    areasToAvoidController.text = widget.terrainPlan.areasToAvoid;
+    routeController.text = terrainPlan.route;
+    areasToAvoidController.text = terrainPlan.areasToAvoid;
   }
 
   _save() async {
-    widget.terrainPlan.route = routeController.text;
-    widget.terrainPlan.areasToAvoid = areasToAvoidController.text;
-    await TerrainPlanModelProvider().save(widget.terrainPlan);
+    terrainPlan.route = routeController.text;
+    terrainPlan.areasToAvoid = areasToAvoidController.text;
+    await TripStore().save(widget.trip);
   }
 
   _onNext(BuildContext context) async {
     if (formKey.currentState!.validate()) {
       await _save();
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return NewTripTimingPage(terrainPlan: widget.terrainPlan);
+        return NewTripTimingPage(trip: widget.trip);
       }));
     }
   }
@@ -58,7 +62,7 @@ class _NewTripRoutePageState extends State<NewTripRoutePage> {
         TitledSection(
           title: 'Terrain mindset',
           subTitle: "What's your terrain mindset for the trip?",
-          child: TerrainMindsetInput(mindset: widget.terrainPlan.mindset),
+          child: TerrainMindsetInput(mindset: terrainPlan.mindset),
         ),
         TextInputTitledSection(
           title: 'Route',

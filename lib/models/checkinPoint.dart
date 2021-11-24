@@ -1,26 +1,30 @@
 import 'dart:core';
+import 'package:backcountry_plan/models/helpers.dart';
 import 'package:flutter/material.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:backcountry_plan/db.dart';
-import 'package:backcountry_plan/models/base.dart';
-import 'package:backcountry_plan/models/plan.dart';
 
-class CheckinPointModel extends BaseModel {
+class CheckinPointModel {
   String description;
   TimeOfDay time;
-  int terrainPlanId;
 
   CheckinPointModel({
-    id,
     required this.description,
     required this.time,
-    required this.terrainPlanId,
-  }) : super(id: id);
+  });
 
-  CheckinPointModel.newForTerrainPlan(int terrainPlanId)
+  CheckinPointModel.create()
       : this.description = "",
-        this.time = TimeOfDay.now(),
-        this.terrainPlanId = terrainPlanId;
+        this.time = TimeOfDay.now();
+
+  CheckinPointModel.fromMap(Map<String, dynamic> map)
+      : this.description = map["description"],
+        this.time = deserializeTimeOfDay(map["time"]);
+
+  Map<String, dynamic> toMap() {
+    return {
+      "description": this.description,
+      "time": serializeTimeOfDay(this.time),
+    };
+  }
 
   int compareTo(CheckinPointModel other) {
     if (this.time.hour < other.time.hour) return -1;
@@ -28,71 +32,5 @@ class CheckinPointModel extends BaseModel {
     if (this.time.minute < other.time.minute) return -1;
     if (this.time.minute > other.time.minute) return 1;
     return 0;
-  }
-}
-
-class CheckinPointModelProvider extends BaseProvider<CheckinPointModel> {
-  static final String checkinPointTableName = "checkin_point";
-  static final String checkinPointColumnId = "id";
-  static final String _columnDescription = "_columnDescription";
-  static final String _columnTime = "time";
-  static final String _columnTerrainPlanId = 'terrain_plan_id';
-
-  static final List<String> _columns = [checkinPointColumnId, _columnDescription, _columnTime, _columnTerrainPlanId];
-
-  static final String createStatement = '''
-                                        CREATE TABLE $checkinPointTableName (
-                                          $checkinPointColumnId INTEGER PRIMARY KEY,
-                                          $_columnDescription TEXT,
-                                          $_columnTime TEXT,
-                                          $_columnTerrainPlanId INTEGER,
-                                          FOREIGN KEY ($_columnTerrainPlanId) REFERENCES ${PlanModelProvider.planTableName}(${PlanModelProvider.planColumnId})
-                                        )
-                                        ''';
-
-  static final CheckinPointModelProvider _singleton = CheckinPointModelProvider._internal();
-
-  factory CheckinPointModelProvider() {
-    return _singleton;
-  }
-
-  CheckinPointModelProvider._internal() {
-    tableName = checkinPointTableName;
-    columnId = checkinPointColumnId;
-    columns = _columns;
-  }
-
-  Map<String, dynamic> toMap(CheckinPointModel checkinPoint) {
-    var map = <String, dynamic>{
-      _columnTerrainPlanId: checkinPoint.terrainPlanId,
-      _columnDescription: checkinPoint.description,
-      _columnTime: serializeTimeOfDay(checkinPoint.time),
-    };
-
-    if (checkinPoint.id != null) {
-      map[columnId] = checkinPoint.id;
-    }
-
-    return map;
-  }
-
-  CheckinPointModel fromMap(Map e) {
-    return CheckinPointModel(
-      id: e[columnId],
-      description: e[_columnDescription],
-      time: deserializeTimeOfDay(e[_columnTime]),
-      terrainPlanId: e[_columnTerrainPlanId],
-    );
-  }
-
-  Future<List<CheckinPointModel>> getByTerrainPlanId(int id) async {
-    Database db = await DatabaseManager.instance.database;
-    List<Map> maps = await db.query(
-      tableName,
-      columns: columns,
-      where: '$_columnTerrainPlanId = ?',
-      whereArgs: [id],
-    );
-    return maps.map((e) => fromMap(e)).toList();
   }
 }

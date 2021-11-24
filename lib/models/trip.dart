@@ -1,76 +1,114 @@
 import 'dart:core';
-import 'package:backcountry_plan/models/base.dart';
-import 'package:backcountry_plan/models/plan.dart';
+import 'package:backcountry_plan/json_db.dart';
+import 'package:backcountry_plan/models/checkinPoint.dart';
+import 'package:backcountry_plan/models/helpers.dart';
+import 'package:backcountry_plan/models/problem.dart';
+import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:intl/intl.dart';
+import 'package:sembast/sembast.dart';
 
-class TripModel extends BaseModel {
+class TripModel {
+  int? key;
   String name;
   DateTime date;
-  int? planId;
-  PlanModel? plan;
+  String keyMessage;
+  String forecast;
+  TerrainPlanModel terrainPlan;
+  List<AvalancheProblemModel> problems;
+  List<CheckinPointModel> checkinPoints;
 
   String friendlyDate() {
     return DateFormat.yMMMd().format(date);
   }
 
   TripModel({
-    id,
     required this.name,
     required this.date,
-    this.planId,
-    this.plan,
-  }) : super(id: id);
+    required this.keyMessage,
+    required this.forecast,
+    required this.terrainPlan,
+    required this.problems,
+    required this.checkinPoints,
+  });
 
   TripModel.create()
       : this.name = "",
-        this.date = DateTime.now();
+        this.date = DateTime.now(),
+        this.keyMessage = "",
+        this.forecast = "",
+        this.terrainPlan = TerrainPlanModel.newForPlan(-1),
+        this.problems = [],
+        this.checkinPoints = [];
+
+  TripModel.fromMap(int key, Map<String, dynamic> map)
+      : this.key = key,
+        this.name = map["name"],
+        this.date = deserializeDateTime(map["date"]),
+        this.keyMessage = map["keyMessage"],
+        this.forecast = map["forecast"],
+        this.terrainPlan = TerrainPlanModel.fromMap(map["terrainPlan"]),
+        this.problems = (map["problems"] as List).map((p) => AvalancheProblemModel.fromMap(p)).toList(),
+        this.checkinPoints = (map["checkinPoints"] as List).map((p) => CheckinPointModel.fromMap(p)).toList();
+
+  Map<String, dynamic> toMap() {
+    return {
+      "name": this.name,
+      "date": serializeDateTime(this.date), // serialize?
+      "keyMessage": this.keyMessage,
+      "forecast": this.forecast,
+      "terrainPlan": this.terrainPlan.toMap(),
+      "problems": this.problems.map((p) => p.toMap()).toList(),
+      "checkinPoints": this.checkinPoints.map((p) => p.toMap()).toList(),
+    };
+  }
+
+  bool isPersisted() {
+    return key != null;
+  }
 }
 
-class TripModelProvider extends BaseProvider<TripModel> {
-  static final String tripTableName = "backcountry_trip";
-  static final String tripColumnId = "id";
-  static final String _columnName = "name";
-  static final String _columnDate = "date";
-  static final List<String> _columns = [tripColumnId, _columnName, _columnDate];
+class TripStore {
+  static final String key = "trip";
+  static late StoreRef<int, Map<String, Object?>> store;
 
-  static final String createStatement = '''
-                                        CREATE TABLE $tripTableName (
-                                          $tripColumnId INTEGER PRIMARY KEY,
-                                          $_columnName TEXT,
-                                          $_columnDate TEXT
-                                        )
-                                        ''';
+  static final TripStore _singleton = TripStore._internal();
 
-  static final TripModelProvider _singleton = TripModelProvider._internal();
-
-  factory TripModelProvider() {
+  factory TripStore() {
     return _singleton;
   }
 
-  TripModelProvider._internal() {
-    tableName = tripTableName;
-    columnId = tripColumnId;
-    columns = _columns;
+  TripStore._internal() {
+    store = intMapStoreFactory.store(TripStore.key);
   }
 
-  Map<String, dynamic> toMap(TripModel trip) {
-    var map = <String, dynamic>{
-      _columnName: trip.name,
-      _columnDate: serializeDateTime(trip.date),
-    };
+  Future<List<TripModel>> all() async {
+    var db = await JsonDatabaseManager.instance.database;
 
-    if (trip.id != null) {
-      map[columnId] = trip.id;
+    var results = await store.find(db);
+
+    return results.map((r) => TripModel.fromMap(r.key, r.value)).toList();
+  }
+
+  Future<TripModel> save(TripModel trip) async {
+    var db = await JsonDatabaseManager.instance.database;
+
+    if (trip.key != null) {
+      var record = store.record(trip.key!);
+      await record.put(db, trip.toMap());
+    } else {
+      var map = trip.toMap();
+      var key = await store.add(db, map);
+      trip.key = key;
     }
 
-    return map;
+    return trip;
   }
 
-  TripModel fromMap(Map e) {
-    return TripModel(
-      id: e[columnId],
-      name: e[_columnName],
-      date: deserializeDateTime(e[_columnDate]),
-    );
+  Future delete(TripModel trip) async {
+    var db = await JsonDatabaseManager.instance.database;
+    if (trip.key != null) {
+      var record = store.record(trip.key!);
+      await record.delete(db);
+    }
   }
 }

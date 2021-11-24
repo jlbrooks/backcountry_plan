@@ -1,9 +1,6 @@
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/plan.dart';
-import 'package:backcountry_plan/models/checkinPoint.dart';
-import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/models/problem.dart';
-import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,28 +14,6 @@ class TripSummaryPage extends StatefulWidget {
 }
 
 class _TripSummaryPageState extends State<TripSummaryPage> {
-  late PlanModel plan = PlanModel.newForTrip(widget.trip.id!);
-  late TerrainPlanModel terrainPlan = TerrainPlanModel.newForPlan(-1);
-  List<AvalancheProblemModel> problems = [];
-  List<CheckinPointModel> checkinPoints = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    PlanModelProvider().getOrNewByTripId(widget.trip.id!).then((_plan) async {
-      var _problems = await AvalancheProblemModelProvider().getByPlanId(_plan.id!);
-      var _terrainPlan = await TerrainPlanModelProvider().getOrNewByPlanId(_plan.id!);
-      var _checkinPoints = await CheckinPointModelProvider().getByTerrainPlanId(_terrainPlan.id!);
-      setState(() {
-        plan = _plan;
-        problems = _problems;
-        terrainPlan = _terrainPlan;
-        checkinPoints = _checkinPoints;
-      });
-    });
-  }
-
   _onEdit(BuildContext context) {}
 
   _onEditProblem(BuildContext context, AvalancheProblemModel problem) {}
@@ -48,11 +23,11 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
     var problemList = ListView.builder(
       shrinkWrap: true,
       physics: ClampingScrollPhysics(),
-      itemCount: problems.length,
-      itemBuilder: (context, index) => ProblemSummary(problem: problems[index], onEditProblem: _onEditProblem),
+      itemCount: widget.trip.problems.length,
+      itemBuilder: (context, index) => ProblemSummary(problem: widget.trip.problems[index], onEditProblem: _onEditProblem),
     );
 
-    List<Widget> checkinPointList = checkinPoints
+    List<Widget> checkinPointList = widget.trip.checkinPoints
         .map((p) => Text(
               "${p.time.format(context)} - ${p.description}",
               style: TextStyle(fontSize: 16),
@@ -82,7 +57,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                 style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
               Text(
-                plan.keyMessage,
+                widget.trip.keyMessage,
                 style: TextStyle(fontSize: 18),
               ),
             ],
@@ -98,7 +73,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         Text(
-          "${terrainPlan.turnaroundTime.format(context)} - ${terrainPlan.turnaroundPoint}",
+          "${widget.trip.terrainPlan.turnaroundTime.format(context)} - ${widget.trip.terrainPlan.turnaroundPoint}",
           style: TextStyle(fontSize: 16),
         ),
         Text(

@@ -2,40 +2,36 @@ import 'package:backcountry_plan/checkinPoint.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/models/terrainPlan.dart';
+import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/terrainPlan.dart';
-import 'package:backcountry_plan/trip.dart';
 import 'package:flutter/material.dart';
 
 class NewTripTimingPage extends StatefulWidget {
-  final TerrainPlanModel terrainPlan;
-  NewTripTimingPage({Key? key, required this.terrainPlan}) : super(key: key);
+  final TripModel trip;
+  NewTripTimingPage({Key? key, required this.trip}) : super(key: key);
 
   @override
-  _NewTripTimingPageState createState() => _NewTripTimingPageState();
+  _NewTripTimingPageState createState() => _NewTripTimingPageState(terrainPlan: trip.terrainPlan, checkinPoints: trip.checkinPoints);
 }
 
 class _NewTripTimingPageState extends State<NewTripTimingPage> {
+  final TerrainPlanModel terrainPlan;
+  final List<CheckinPointModel> checkinPoints;
   final TextEditingController turnaroundPointController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  List<CheckinPointModel> checkinPoints = [];
+
+  _NewTripTimingPageState({required this.terrainPlan, required this.checkinPoints});
 
   @override
   void initState() {
     super.initState();
-    turnaroundPointController.text = widget.terrainPlan.turnaroundPoint;
-
-    CheckinPointModelProvider().getByTerrainPlanId(widget.terrainPlan.id!).then((_points) {
-      setState(() {
-        checkinPoints = _points;
-        checkinPoints.sort((a, b) => a.compareTo(b));
-      });
-    });
+    turnaroundPointController.text = terrainPlan.turnaroundPoint;
   }
 
   _save() async {
-    widget.terrainPlan.turnaroundPoint = turnaroundPointController.text;
-    await TerrainPlanModelProvider().save(widget.terrainPlan);
+    terrainPlan.turnaroundPoint = turnaroundPointController.text;
+    await TripStore().save(widget.trip);
   }
 
   _onNext(BuildContext context) async {
@@ -53,25 +49,24 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
   Future<void> _showTurnaroundTimePicker(BuildContext context) async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: widget.terrainPlan.turnaroundTime,
+      initialTime: terrainPlan.turnaroundTime,
     );
     if (picked != null) {
       setState(() {
-        widget.terrainPlan.turnaroundTime = picked;
+        terrainPlan.turnaroundTime = picked;
       });
     }
   }
 
   _showEditCheckinPointPage(BuildContext context, CheckinPointModel? point) async {
     if (point == null) {
-      point = CheckinPointModel.newForTerrainPlan(widget.terrainPlan.id!);
+      point = CheckinPointModel.create();
     }
     final result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return EditCheckinPointPage(checkinPoint: point!);
     }));
 
     if (result != null) {
-      await CheckinPointModelProvider().save(result);
       setState(() {
         var index = checkinPoints.indexOf(result);
         // When the point was already in the list
@@ -83,6 +78,7 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
           checkinPoints.add(result);
         }
         checkinPoints.sort((a, b) => a.compareTo(b));
+        TripStore().save(widget.trip);
       });
     }
   }
@@ -94,11 +90,10 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
       confirmDeleteTitle: 'Delete checkin point?',
       confirmDeleteBodyBuilder: (CheckinPointModel item) => 'Are you sure you would like to delete the checkin point at ${item.time.format(context)}?',
       onDelete: (CheckinPointModel item, int index) {
-        // Delete from database
-        CheckinPointModelProvider().delete(item);
         // Remove from the trip list
         setState(() {
           checkinPoints.removeAt(index);
+          TripStore().save(widget.trip);
         });
       },
       itemBuilder: (CheckinPointModel item) => CheckinPointListItem(point: item, onTapped: _showEditCheckinPointPage),
@@ -133,7 +128,7 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  widget.terrainPlan.turnaroundTime.format(context),
+                  terrainPlan.turnaroundTime.format(context),
                   style: TextStyle(fontSize: 14),
                 ),
               ),
