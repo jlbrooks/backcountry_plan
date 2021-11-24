@@ -3,6 +3,7 @@ import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/plan.dart';
 import 'package:backcountry_plan/screens/newTrip/newTrip.dart';
+import 'package:backcountry_plan/screens/tripSummary/tripSummary.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -29,7 +30,7 @@ class TripListPageState extends State<TripListPage> {
 
   _onTripPressed(BuildContext context, TripModel trip) async {
     await Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return TripPage(trip: trip);
+      return TripSummaryPage(trip: trip);
     }));
   }
 

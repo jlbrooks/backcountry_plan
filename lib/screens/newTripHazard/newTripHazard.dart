@@ -2,6 +2,7 @@ import 'package:backcountry_plan/models/plan.dart';
 import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
+import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/plan.dart';
 import 'package:backcountry_plan/problem.dart';
 import 'package:backcountry_plan/screens/newTripWeather/newTripWeather.dart';
@@ -105,7 +106,7 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
       itemBuilder: (AvalancheProblemModel item) => ProblemSummary(problem: item, onEditProblem: _onEditProblem),
     );
 
-    return FormColumnScreen(
+    return FormListScreen(
       titleText: 'Hazards',
       actionText: 'Next',
       onAction: _onNext,

@@ -1,5 +1,6 @@
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/components/common.dart';
+import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/screens/newTripTiming/newTripTiming.dart';
 import 'package:backcountry_plan/terrainPlan.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class _NewTripRoutePageState extends State<NewTripRoutePage> {
 
   @override
   Widget build(BuildContext context) {
-    return FormColumnScreen(
+    return FormListScreen(
       titleText: 'Plan to manage terrain',
       actionText: 'Next',
       onAction: _onNext,

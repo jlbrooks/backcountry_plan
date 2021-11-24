@@ -1,4 +1,5 @@
 import 'package:backcountry_plan/components/common.dart';
+import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/screens/newTripHazard/newTripHazard.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _NewTripPageState extends State<NewTripPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FormColumnScreen(
+    return FormListScreen(
       titleText: 'New trip',
       actionText: 'Next',
       onAction: _onNext,

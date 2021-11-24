@@ -1,5 +1,6 @@
 import 'package:backcountry_plan/checkinPoint.dart';
 import 'package:backcountry_plan/components/common.dart';
+import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/terrainPlan.dart';
@@ -103,7 +104,7 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
       itemBuilder: (CheckinPointModel item) => CheckinPointListItem(point: item, onTapped: _showEditCheckinPointPage),
     );
 
-    return FormColumnScreen(
+    return FormListScreen(
       titleText: 'Trip timing',
       actionText: 'Save trip',
       onAction: _onNext,
