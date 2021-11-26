@@ -27,3 +27,37 @@ extension TimeOfDayExtension on TimeOfDay {
     return 0;
   }
 }
+
+extension DateTimeExtensions on DateTime {
+  DateTime clone({
+    int? year,
+    int? month,
+    int? day,
+    int? hour,
+    int? minute,
+    int? second,
+    int? millisecond,
+    bool? isUtc,
+  }) {
+    if (isUtc == null ? this.isUtc : isUtc) {
+      return DateTime.utc(
+        year == null ? this.year : year,
+        month == null ? this.month : month,
+        day == null ? this.day : day,
+        hour == null ? this.hour : hour,
+        minute == null ? this.minute : minute,
+        second == null ? this.second : second,
+        millisecond == null ? this.millisecond : millisecond,
+      );
+    }
+    return DateTime(
+      year == null ? this.year : year,
+      month == null ? this.month : month,
+      day == null ? this.day : day,
+      hour == null ? this.hour : hour,
+      minute == null ? this.minute : minute,
+      second == null ? this.second : second,
+      millisecond == null ? this.millisecond : millisecond,
+    );
+  }
+}

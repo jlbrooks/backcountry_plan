@@ -1,3 +1,4 @@
+import 'package:backcountry_plan/common.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/models/trip.dart';
@@ -5,53 +6,65 @@ import 'package:backcountry_plan/screens/newTripHazard/newTripHazard.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class NewTripPage extends StatefulWidget {
-  NewTripPage({Key? key}) : super(key: key);
+class TripNameDatePage extends StatefulWidget {
+  final TripModel trip;
+  final bool isNewTripWizard;
+
+  TripNameDatePage({required this.trip, required this.isNewTripWizard});
 
   @override
-  _NewTripPageState createState() => _NewTripPageState();
+  _TripNameDatePageState createState() => _TripNameDatePageState();
 }
 
-class _NewTripPageState extends State<NewTripPage> {
-  TripModel trip = TripModel.create();
+class _TripNameDatePageState extends State<TripNameDatePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController tripNameTextController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    tripNameTextController.text = trip.name;
+    tripNameTextController.text = widget.trip.name;
+    selectedDate = widget.trip.date.clone();
   }
 
   _showDatePicker(BuildContext context) async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: trip.date,
+      initialDate: selectedDate,
       firstDate: DateTime(1900),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
-        trip.date = picked;
+        selectedDate = picked;
       });
     }
   }
 
   _onNext(BuildContext context) async {
     if (_formKey.currentState!.validate()) {
-      trip.name = tripNameTextController.text;
-      await TripStore().save(trip);
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return NewTripHazardPage(trip: trip);
-      }));
+      widget.trip.name = tripNameTextController.text;
+      widget.trip.date = selectedDate;
+      await TripStore().save(widget.trip);
+
+      if (widget.isNewTripWizard) {
+        Navigator.push(context, MaterialPageRoute(builder: (context) {
+          return NewTripHazardPage(trip: widget.trip);
+        }));
+      } else {
+        Navigator.pop(context, widget.trip);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    var actionText = widget.isNewTripWizard ? 'Next' : 'Save';
+    var titleText = widget.isNewTripWizard ? 'New trip' : 'Edit trip';
     return FormListScreen(
-      titleText: 'New trip',
-      actionText: 'Next',
+      titleText: titleText,
+      actionText: actionText,
       onAction: _onNext,
       formKey: _formKey,
       children: <Widget>[
@@ -69,7 +82,7 @@ class _NewTripPageState extends State<NewTripPage> {
               Expanded(
                 flex: 2,
                 child: Text(
-                  DateFormat.yMMMd().format(trip.date),
+                  DateFormat.yMMMd().format(selectedDate),
                   style: TextStyle(fontSize: 14),
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/plan.dart';
 import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/models/trip.dart';
+import 'package:backcountry_plan/screens/tripNameDate/tripNameDate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -14,7 +15,25 @@ class TripSummaryPage extends StatefulWidget {
 }
 
 class _TripSummaryPageState extends State<TripSummaryPage> {
-  _onEdit(BuildContext context) {}
+  _onEdit(BuildContext context) async {
+    TripModel? result = await Navigator.push<TripModel>(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return TripNameDatePage(
+          trip: widget.trip,
+          isNewTripWizard: false,
+        );
+      }),
+    );
+
+    if (result != null) {
+      TripStore().save(result);
+      setState(() {
+        widget.trip.name = result.name;
+        widget.trip.date = result.date;
+      });
+    }
+  }
 
   _onEditProblem(BuildContext context, AvalancheProblemModel problem) {}
 

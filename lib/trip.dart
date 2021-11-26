@@ -1,6 +1,6 @@
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/models/trip.dart';
-import 'package:backcountry_plan/screens/newTrip/newTrip.dart';
+import 'package:backcountry_plan/screens/tripNameDate/tripNameDate.dart';
 import 'package:backcountry_plan/screens/tripSummary/tripSummary.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -30,13 +30,20 @@ class TripListPageState extends State<TripListPage> {
     await Navigator.push(context, MaterialPageRoute(builder: (context) {
       return TripSummaryPage(trip: trip);
     }));
+    setState(() {
+      this.tripList[this.tripList.indexOf(trip)] = trip;
+    });
   }
 
   _onAddTripPressed(BuildContext context) async {
+    var trip = TripModel.create();
     await Navigator.push<TripModel>(
       context,
       MaterialPageRoute(builder: (context) {
-        return NewTripPage();
+        return TripNameDatePage(
+          trip: trip,
+          isNewTripWizard: true,
+        );
       }),
     );
 
