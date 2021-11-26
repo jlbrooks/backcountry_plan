@@ -1,18 +1,18 @@
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
-import 'package:backcountry_plan/screens/newTripRoute/newTripRoute.dart';
+import 'package:backcountry_plan/screens/tripRoute/tripRoute.dart';
 import 'package:flutter/material.dart';
 
-class NewTripWeatherPage extends StatefulWidget {
+class TripWeatherPage extends StatefulWidget {
   final TripModel trip;
-  NewTripWeatherPage({Key? key, required this.trip}) : super(key: key);
+  TripWeatherPage({Key? key, required this.trip}) : super(key: key);
 
   @override
-  _NewTripWeatherPageState createState() => _NewTripWeatherPageState();
+  _TripWeatherPageState createState() => _TripWeatherPageState();
 }
 
-class _NewTripWeatherPageState extends State<NewTripWeatherPage> {
+class _TripWeatherPageState extends State<TripWeatherPage> {
   final TextEditingController forecastTextController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
@@ -27,7 +27,7 @@ class _NewTripWeatherPageState extends State<NewTripWeatherPage> {
       this.widget.trip.forecast = forecastTextController.text;
       await TripStore().save(widget.trip);
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return NewTripRoutePage(trip: widget.trip);
+        return TripRoutePage(trip: widget.trip);
       }));
     }
   }

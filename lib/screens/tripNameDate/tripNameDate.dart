@@ -2,7 +2,7 @@ import 'package:backcountry_plan/common.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/models/trip.dart';
-import 'package:backcountry_plan/screens/newTripHazard/newTripHazard.dart';
+import 'package:backcountry_plan/screens/tripHazard/tripHazard.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -50,7 +50,7 @@ class _TripNameDatePageState extends State<TripNameDatePage> {
 
       if (widget.isNewTripWizard) {
         Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return NewTripHazardPage(trip: widget.trip);
+          return TripHazardPage(trip: widget.trip);
         }));
       } else {
         Navigator.pop(context, widget.trip);

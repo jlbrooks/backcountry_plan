@@ -6,21 +6,21 @@ import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:flutter/material.dart';
 
-class NewTripTimingPage extends StatefulWidget {
+class TripTimingPage extends StatefulWidget {
   final TripModel trip;
-  NewTripTimingPage({Key? key, required this.trip}) : super(key: key);
+  TripTimingPage({Key? key, required this.trip}) : super(key: key);
 
   @override
-  _NewTripTimingPageState createState() => _NewTripTimingPageState(terrainPlan: trip.terrainPlan, checkinPoints: trip.checkinPoints);
+  _TripTimingPageState createState() => _TripTimingPageState(terrainPlan: trip.terrainPlan, checkinPoints: trip.checkinPoints);
 }
 
-class _NewTripTimingPageState extends State<NewTripTimingPage> {
+class _TripTimingPageState extends State<TripTimingPage> {
   final TerrainPlanModel terrainPlan;
   final List<CheckinPointModel> checkinPoints;
   final TextEditingController turnaroundPointController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
-  _NewTripTimingPageState({required this.terrainPlan, required this.checkinPoints});
+  _TripTimingPageState({required this.terrainPlan, required this.checkinPoints});
 
   @override
   void initState() {

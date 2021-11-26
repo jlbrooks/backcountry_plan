@@ -2,24 +2,24 @@ import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
-import 'package:backcountry_plan/screens/newTripTiming/newTripTiming.dart';
+import 'package:backcountry_plan/screens/tripTiming/tripTiming.dart';
 import 'package:flutter/material.dart';
 
-class NewTripRoutePage extends StatefulWidget {
+class TripRoutePage extends StatefulWidget {
   final TripModel trip;
-  NewTripRoutePage({Key? key, required this.trip}) : super(key: key);
+  TripRoutePage({Key? key, required this.trip}) : super(key: key);
 
   @override
-  _NewTripRoutePageState createState() => _NewTripRoutePageState(terrainPlan: trip.terrainPlan);
+  _TripRoutePageState createState() => _TripRoutePageState(terrainPlan: trip.terrainPlan);
 }
 
-class _NewTripRoutePageState extends State<NewTripRoutePage> {
+class _TripRoutePageState extends State<TripRoutePage> {
   final TerrainPlanModel terrainPlan;
   final formKey = GlobalKey<FormState>();
   final TextEditingController routeController = TextEditingController();
   final TextEditingController areasToAvoidController = TextEditingController();
 
-  _NewTripRoutePageState({required this.terrainPlan});
+  _TripRoutePageState({required this.terrainPlan});
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _NewTripRoutePageState extends State<NewTripRoutePage> {
     if (formKey.currentState!.validate()) {
       await _save();
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return NewTripTimingPage(trip: widget.trip);
+        return TripTimingPage(trip: widget.trip);
       }));
     }
   }

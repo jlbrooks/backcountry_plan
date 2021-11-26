@@ -4,18 +4,18 @@ import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/components/problem.dart';
 import 'package:backcountry_plan/screens/problemEdit/problemEdit.dart';
-import 'package:backcountry_plan/screens/newTripWeather/newTripWeather.dart';
+import 'package:backcountry_plan/screens/tripWeather/tripWeather.dart';
 import 'package:flutter/material.dart';
 
-class NewTripHazardPage extends StatefulWidget {
+class TripHazardPage extends StatefulWidget {
   final TripModel trip;
-  NewTripHazardPage({Key? key, required this.trip}) : super(key: key);
+  TripHazardPage({Key? key, required this.trip}) : super(key: key);
 
   @override
-  _NewTripHazardPageState createState() => _NewTripHazardPageState();
+  _TripHazardPageState createState() => _TripHazardPageState();
 }
 
-class _NewTripHazardPageState extends State<NewTripHazardPage> {
+class _TripHazardPageState extends State<TripHazardPage> {
   final TextEditingController keyMessageTextController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
@@ -58,7 +58,7 @@ class _NewTripHazardPageState extends State<NewTripHazardPage> {
       widget.trip.keyMessage = keyMessageTextController.text;
       await TripStore().save(widget.trip);
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return NewTripWeatherPage(trip: widget.trip);
+        return TripWeatherPage(trip: widget.trip);
       }));
     }
   }

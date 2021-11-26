@@ -21,7 +21,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
       MaterialPageRoute(builder: (context) {
         return TripNameDatePage(
           trip: widget.trip,
-          isNewTripWizard: false,
+          isNewTripWizard: true,
         );
       }),
     );
