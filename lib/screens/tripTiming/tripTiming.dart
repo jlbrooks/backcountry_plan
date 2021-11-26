@@ -4,6 +4,7 @@ import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
+import 'package:backcountry_plan/screens/tripSummary/tripSummary.dart';
 import 'package:flutter/material.dart';
 
 class TripTimingPage extends StatefulWidget {
@@ -37,6 +38,9 @@ class _TripTimingPageState extends State<TripTimingPage> {
     if (formKey.currentState!.validate()) {
       await _save();
       Navigator.popUntil(context, (route) => route.isFirst);
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return TripSummaryPage(trip: widget.trip);
+      }));
     }
   }
 
