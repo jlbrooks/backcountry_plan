@@ -6,6 +6,7 @@ class TerrainPlanModel {
   TerrainMindset mindset;
   String areasToAvoid;
   String route;
+  String mapLink;
   String turnaroundPoint;
   TimeOfDay turnaroundTime;
 
@@ -13,6 +14,7 @@ class TerrainPlanModel {
     required this.mindset,
     required this.areasToAvoid,
     required this.route,
+    required this.mapLink,
     required this.turnaroundPoint,
     required this.turnaroundTime,
   });
@@ -21,14 +23,16 @@ class TerrainPlanModel {
       : this.mindset = TerrainMindset(),
         this.areasToAvoid = "",
         this.route = "",
+        this.mapLink = "",
         this.turnaroundPoint = "",
         this.turnaroundTime = TimeOfDay.now();
 
   TerrainPlanModel.fromMap(Map<String, dynamic> map)
       : this.mindset = TerrainMindset.deserialize(map["mindset"]),
-        this.areasToAvoid = map["areasToAvoid"],
-        this.route = map["route"],
-        this.turnaroundPoint = map["turnaroundPoint"],
+        this.areasToAvoid = map["areasToAvoid"] ?? "",
+        this.route = map["route"] ?? "",
+        this.mapLink = map["mapLink"] ?? "",
+        this.turnaroundPoint = map["turnaroundPoint"] ?? "",
         this.turnaroundTime = deserializeTimeOfDay(map["turnaroundTime"]);
 
   Map<String, dynamic> toMap() {
@@ -36,6 +40,7 @@ class TerrainPlanModel {
       "mindset": this.mindset.serialize(),
       "areasToAvoid": this.areasToAvoid,
       "route": this.route,
+      "mapLink": this.mapLink,
       "turnaroundPoint": this.turnaroundPoint,
       "turnaroundTime": serializeTimeOfDay(this.turnaroundTime),
     };
@@ -55,12 +60,12 @@ class TerrainMindset {
   TerrainMindset() : type = MindsetType.keepItSimple;
   TerrainMindset.fromType(this.type);
 
-  static TerrainMindset deserialize(String s) {
-    if (s.isNotEmpty) {
-      return TerrainMindset.fromType(MindsetType.values[int.parse(s)]);
+  static TerrainMindset deserialize(String? s) {
+    if (s == null || s.isEmpty) {
+      return TerrainMindset();
     }
 
-    return TerrainMindset();
+    return TerrainMindset.fromType(MindsetType.values[int.parse(s)]);
   }
 
   String serialize() {

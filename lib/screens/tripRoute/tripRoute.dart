@@ -18,6 +18,7 @@ class _TripRoutePageState extends State<TripRoutePage> {
   final formKey = GlobalKey<FormState>();
   final TextEditingController routeController = TextEditingController();
   final TextEditingController areasToAvoidController = TextEditingController();
+  final TextEditingController mapLinkController = TextEditingController();
 
   _TripRoutePageState({required this.terrainPlan});
 
@@ -27,11 +28,13 @@ class _TripRoutePageState extends State<TripRoutePage> {
 
     routeController.text = terrainPlan.route;
     areasToAvoidController.text = terrainPlan.areasToAvoid;
+    mapLinkController.text = terrainPlan.mapLink;
   }
 
   _save() async {
     terrainPlan.route = routeController.text;
     terrainPlan.areasToAvoid = areasToAvoidController.text;
+    terrainPlan.mapLink = mapLinkController.text;
     await TripStore().save(widget.trip);
   }
 
@@ -71,6 +74,16 @@ class _TripRoutePageState extends State<TripRoutePage> {
           controller: routeController,
           minLines: 5,
           maxLines: 10,
+        ),
+        TextInputTitledSection(
+          title: 'Map link',
+          subTitle: "Web link to the map for the trip, e.g. CalTopo.",
+          hintText: 'https://caltopo.com/m/1SVA',
+          keyboardType: TextInputType.url,
+          textCapitalization: TextCapitalization.none,
+          controller: mapLinkController,
+          minLines: 1,
+          maxLines: 2,
         ),
         TextInputTitledSection(
           title: 'Areas to avoid',

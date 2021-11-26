@@ -22,23 +22,26 @@ class TextInputTitledSection extends StatelessWidget {
   final String title;
   final String? subTitle;
   final String hintText;
-  // TODO: Make validation configurable?
   final String validationText;
   final Function(String)? onChanged;
   final TextEditingController controller;
   final int minLines;
   final int maxLines;
+  final TextCapitalization textCapitalization;
+  final TextInputType keyboardType;
 
   const TextInputTitledSection({
     Key? key,
     required this.title,
     this.subTitle,
     required this.hintText,
-    required this.validationText,
+    this.validationText = "",
     required this.controller,
     this.onChanged,
     this.minLines = 1,
     this.maxLines = 3,
+    this.textCapitalization = TextCapitalization.sentences,
+    this.keyboardType = TextInputType.multiline,
   }) : super(key: key);
 
   @override
@@ -48,7 +51,8 @@ class TextInputTitledSection extends StatelessWidget {
       subTitle: subTitle,
       child: TextFormField(
         controller: controller,
-        textCapitalization: TextCapitalization.sentences,
+        textCapitalization: textCapitalization,
+        keyboardType: keyboardType,
         minLines: minLines,
         maxLines: maxLines,
         decoration: InputDecoration(
@@ -56,7 +60,7 @@ class TextInputTitledSection extends StatelessWidget {
           hintText: hintText,
         ),
         validator: (value) {
-          if (value == null || value.isEmpty) {
+          if (validationText.isNotEmpty && (value == null || value.isEmpty)) {
             return validationText;
           }
           return null;
