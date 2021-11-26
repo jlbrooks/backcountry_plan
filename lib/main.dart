@@ -1,4 +1,4 @@
-import 'package:backcountry_plan/trip.dart';
+import 'package:backcountry_plan/screens/tripList/tripList.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         }
       },
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Backcountry plan',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,

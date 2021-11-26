@@ -2,8 +2,8 @@ import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
-import 'package:backcountry_plan/plan.dart';
-import 'package:backcountry_plan/problem.dart';
+import 'package:backcountry_plan/components/problem.dart';
+import 'package:backcountry_plan/screens/problemEdit/problemEdit.dart';
 import 'package:backcountry_plan/screens/newTripWeather/newTripWeather.dart';
 import 'package:flutter/material.dart';
 

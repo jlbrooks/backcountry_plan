@@ -3,7 +3,6 @@ import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/screens/newTripTiming/newTripTiming.dart';
-import 'package:backcountry_plan/terrainPlan.dart';
 import 'package:flutter/material.dart';
 
 class NewTripRoutePage extends StatefulWidget {
@@ -83,6 +82,47 @@ class _NewTripRoutePageState extends State<NewTripRoutePage> {
           maxLines: 10,
         ),
       ],
+    );
+  }
+}
+
+class TerrainMindsetInput extends StatefulWidget {
+  final TerrainMindset mindset;
+  const TerrainMindsetInput({Key? key, required this.mindset}) : super(key: key);
+
+  @override
+  _TerrainMindsetInputState createState() => _TerrainMindsetInputState();
+}
+
+class _TerrainMindsetInputState extends State<TerrainMindsetInput> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: DropdownButton<MindsetType>(
+        value: widget.mindset.type,
+        hint: Text('Mindset'),
+        icon: Icon(Icons.arrow_downward),
+        iconSize: 24,
+        elevation: 16,
+        style: TextStyle(color: Colors.black),
+        underline: Container(
+          height: 2,
+          color: Colors.blueAccent,
+        ),
+        onChanged: (MindsetType? newValue) {
+          if (newValue != null) {
+            setState(() {
+              widget.mindset.set(newValue);
+            });
+          }
+        },
+        items: MindsetType.values.map<DropdownMenuItem<MindsetType>>((MindsetType value) {
+          return DropdownMenuItem<MindsetType>(
+            value: value,
+            child: Text(value.toName()),
+          );
+        }).toList(),
+      ),
     );
   }
 }

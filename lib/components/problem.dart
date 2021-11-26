@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:backcountry_plan/models/problem.dart';
-import 'package:backcountry_plan/problem.dart';
+import 'package:backcountry_plan/screens/problemEdit/problemEdit.dart';
 import 'package:flutter/material.dart';
 
 class ProblemSummary extends StatelessWidget {

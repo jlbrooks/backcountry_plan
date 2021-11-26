@@ -1,10 +1,9 @@
-import 'package:backcountry_plan/checkinPoint.dart';
+import 'package:backcountry_plan/screens/editCheckinPoint/editCheckinPoint.dart';
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/models/terrainPlan.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
-import 'package:backcountry_plan/terrainPlan.dart';
 import 'package:flutter/material.dart';
 
 class NewTripTimingPage extends StatefulWidget {
@@ -149,6 +148,27 @@ class _NewTripTimingPageState extends State<NewTripTimingPage> {
           child: checkinPointListView,
         ),
       ],
+    );
+  }
+}
+
+class CheckinPointListItem extends StatelessWidget {
+  final CheckinPointModel point;
+  final Function(BuildContext, CheckinPointModel) onTapped;
+
+  const CheckinPointListItem({Key? key, required this.point, required this.onTapped}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        title: Text(point.description),
+        subtitle: Text(point.time.format(context)),
+        trailing: Icon(Icons.chevron_right),
+        onTap: () {
+          onTapped(context, point);
+        },
+      ),
     );
   }
 }

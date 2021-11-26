@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:backcountry_plan/models/problem.dart';
-import 'package:backcountry_plan/common.dart';
+import 'package:backcountry_plan/components/common.dart';
 import 'package:flutter/material.dart';
 import 'package:touchable/touchable.dart';
 
