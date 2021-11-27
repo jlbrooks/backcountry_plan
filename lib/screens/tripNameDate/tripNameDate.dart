@@ -48,23 +48,18 @@ class _TripNameDatePageState extends State<TripNameDatePage> {
       widget.trip.date = selectedDate;
       await TripStore().save(widget.trip);
 
-      if (widget.isNewTripWizard) {
-        Navigator.push(context, MaterialPageRoute(builder: (context) {
-          return TripHazardPage(trip: widget.trip);
-        }));
-      } else {
-        Navigator.pop(context, widget.trip);
-      }
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return TripHazardPage(trip: widget.trip);
+      }));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var actionText = widget.isNewTripWizard ? 'Next' : 'Save';
     var titleText = widget.isNewTripWizard ? 'New trip' : 'Edit trip';
     return FormListScreen(
       titleText: titleText,
-      actionText: actionText,
+      actionText: 'Next',
       onAction: _onNext,
       formKey: _formKey,
       children: <Widget>[
