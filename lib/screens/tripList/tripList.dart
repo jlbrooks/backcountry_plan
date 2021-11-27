@@ -1,5 +1,6 @@
 import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/models/trip.dart';
+import 'package:backcountry_plan/screens/settings/settings.dart';
 import 'package:backcountry_plan/screens/tripNameDate/tripNameDate.dart';
 import 'package:backcountry_plan/screens/tripSummary/tripSummary.dart';
 import 'package:flutter/material.dart';
@@ -55,6 +56,12 @@ class TripListPageState extends State<TripListPage> {
     });
   }
 
+  _onEditSettings(BuildContext context) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return SettingsPage();
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     var tripListView = DeleteableListView(
@@ -73,7 +80,15 @@ class TripListPageState extends State<TripListPage> {
     );
 
     return Scaffold(
-      appBar: AppBar(title: Text('My trips')),
+      appBar: AppBar(
+        title: Text('My trips'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () => _onEditSettings(context),
+          )
+        ],
+      ),
       body: tripListView,
       floatingActionButton: FloatingActionButton(
         onPressed: () => {_onAddTripPressed(context)},
