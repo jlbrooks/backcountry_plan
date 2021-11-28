@@ -1,5 +1,6 @@
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/components/problem.dart';
+import 'package:backcountry_plan/components/typography.dart';
 import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/screens/tripNameDate/tripNameDate.dart';
@@ -69,39 +70,72 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Key message",
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-              ),
-              Text(
-                widget.trip.keyMessage,
-                style: TextStyle(fontSize: 18),
-              ),
+              SubTitle('Key message'),
+              BodyText(widget.trip.keyMessage),
             ],
           ),
         ),
-        Text(
-          "Problems",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        SubTitle("Problems"),
         problemList,
-        Text(
-          "Turnaround time",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ExpansionTile(
+          title: SubTitle('Forecast'),
+          tilePadding: EdgeInsets.all(0.0),
+          childrenPadding: EdgeInsets.only(left: 8.0, bottom: 8.0),
+          children: [
+            BodyText(widget.trip.forecast),
+          ],
         ),
-        Text(
-          "${widget.trip.terrainPlan.turnaroundTime.format(context)} - ${widget.trip.terrainPlan.turnaroundPoint}",
-          style: TextStyle(fontSize: 16),
+        ExpansionTile(
+          title: SubTitle('Route summary'),
+          tilePadding: EdgeInsets.all(0.0),
+          childrenPadding: EdgeInsets.only(left: 8.0, bottom: 8.0),
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        OverlineText('Terrain mindset'),
+                        BodyText(widget.trip.terrainPlan.mindset.toString()),
+                        SizedBox(height: 8),
+                        OverlineText('Turnaround point'),
+                        BodyText(widget.trip.terrainPlan.turnaroundPoint),
+                        SizedBox(height: 8),
+                        OverlineText('Route'),
+                        BodyText(widget.trip.terrainPlan.route),
+                        SizedBox(height: 8),
+                        OverlineText('Areas to avoid'),
+                        BodyText(widget.trip.terrainPlan.areasToAvoid),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
         ),
-        Text(
-          "Checkin points",
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: checkinPointList,
-        ),
+        // Text(
+        //   "Checkin points",
+        //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        // ),
+        // Column(
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: checkinPointList,
+        // ),
       ],
     );
+  }
+}
+
+class ForecastDropdown extends StatelessWidget {
+  final String forecast;
+
+  const ForecastDropdown({Key? key, required this.forecast}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }
