@@ -21,6 +21,10 @@ class TripModel {
     return DateFormat.yMMMd().format(date);
   }
 
+  String shortDate() {
+    return DateFormat('M/d/yy').format(date);
+  }
+
   TripModel({
     required this.name,
     required this.date,

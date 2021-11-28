@@ -53,8 +53,10 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
             ))
         .toList();
 
+    var title = "${widget.trip.name} - ${widget.trip.shortDate()}";
+
     return ListScreen(
-      titleText: widget.trip.name,
+      titleText: title,
       actions: [
         IconButton(
           icon: Icon(Icons.edit),
@@ -62,10 +64,6 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
         )
       ],
       children: [
-        Text(
-          widget.trip.friendlyDate(),
-          style: TextStyle(fontSize: 16),
-        ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
