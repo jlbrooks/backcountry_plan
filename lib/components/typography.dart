@@ -1,5 +1,21 @@
 import 'package:flutter/material.dart';
 
+class HeadingSix extends StatelessWidget {
+  final String text;
+  const HeadingSix(this.text, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+  }
+}
+
 class SubTitle extends StatelessWidget {
   final String text;
   const SubTitle(this.text, {Key? key}) : super(key: key);
@@ -43,7 +59,7 @@ class OverlineText extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: Text(
-        text,
+        text.toUpperCase(),
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w500,

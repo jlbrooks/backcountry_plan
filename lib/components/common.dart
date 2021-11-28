@@ -124,7 +124,7 @@ class DeleteableListView<T> extends StatelessWidget {
   final String confirmDeleteTitle;
   final String Function(T) confirmDeleteBodyBuilder;
   final Function(T, int) onDelete;
-  final Widget Function(T) itemBuilder;
+  final Widget Function(T, int) itemBuilder;
   const DeleteableListView({
     Key? key,
     required this.list,
@@ -187,7 +187,7 @@ class DeleteableListView<T> extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          child: itemBuilder(item),
+          child: itemBuilder(item, index),
         );
       },
     );

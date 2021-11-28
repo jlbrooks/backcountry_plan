@@ -1,14 +1,15 @@
 import 'dart:math' as math;
 
+import 'package:backcountry_plan/components/typography.dart';
 import 'package:backcountry_plan/models/problem.dart';
-import 'package:backcountry_plan/screens/problemEdit/problemEdit.dart';
 import 'package:flutter/material.dart';
 
 class ProblemSummary extends StatelessWidget {
   final AvalancheProblemModel problem;
+  final int index;
   final Function(BuildContext, AvalancheProblemModel) onEditProblem;
 
-  const ProblemSummary({Key? key, required this.problem, required this.onEditProblem}) : super(key: key);
+  const ProblemSummary({Key? key, required this.problem, required this.index, required this.onEditProblem}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,43 +18,52 @@ class ProblemSummary extends StatelessWidget {
         onTap: () => onEditProblem(context, problem),
         child: Card(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Text(
-                    problem.problemType.toString(),
-                    style: TextStyle(fontSize: 24),
+                Padding(
+                  padding: const EdgeInsets.only(top: 14, bottom: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      OverlineText('Problem ${this.index + 1}'),
+                      HeadingSix(problem.problemType.toString()),
+                    ],
                   ),
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          ProblemLikelihoodInput(
-                            likelihood: problem.likelihood,
-                            isEnabled: false,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            OverlineText('Aspect/elevation'),
+                            AspectElevationDiagram(problem: problem),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 24),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              OverlineText('Likelihood'),
+                              HeadingSix(problem.likelihood.toString()),
+                              SizedBox(height: 20),
+                              OverlineText('Size'),
+                              HeadingSix(problem.size.toString()),
+                            ],
                           ),
-                          Text('Likelihood')
-                        ],
+                        ),
                       ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Column(
-                        children: [AspectElevationDiagram(problem: problem), Text('Aspect/elevation')],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Text(problem.size.toString()),
-                          Text('Size'),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 )
               ],
             ),
@@ -73,7 +83,7 @@ class AspectElevationDiagram extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: SizedBox(
-        height: 120,
+        height: 160,
         child: CustomPaint(
           painter: AspectElevationPainter(
             problemAspect: problem.aspect,

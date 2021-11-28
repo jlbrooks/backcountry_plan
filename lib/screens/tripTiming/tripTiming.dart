@@ -99,7 +99,7 @@ class _TripTimingPageState extends State<TripTimingPage> {
           TripStore().save(widget.trip);
         });
       },
-      itemBuilder: (CheckinPointModel item) => CheckinPointListItem(point: item, onTapped: _showEditCheckinPointPage),
+      itemBuilder: (CheckinPointModel item, index) => CheckinPointListItem(point: item, onTapped: _showEditCheckinPointPage),
     );
 
     return FormListScreen(

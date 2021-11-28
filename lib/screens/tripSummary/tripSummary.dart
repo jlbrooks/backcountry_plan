@@ -4,6 +4,7 @@ import 'package:backcountry_plan/components/typography.dart';
 import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/screens/tripNameDate/tripNameDate.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -40,19 +41,19 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
 
   @override
   Widget build(BuildContext context) {
-    var problemList = ListView.builder(
-      shrinkWrap: true,
-      physics: ClampingScrollPhysics(),
+    var problemCarousel = CarouselSlider.builder(
+      options: CarouselOptions(
+        height: 300.0,
+        viewportFraction: 1.0,
+        enableInfiniteScroll: false,
+      ),
       itemCount: widget.trip.problems.length,
-      itemBuilder: (context, index) => ProblemSummary(problem: widget.trip.problems[index], onEditProblem: _onEditProblem),
+      itemBuilder: (context, index, pageViewIndex) => ProblemSummary(
+        index: index,
+        problem: widget.trip.problems[index],
+        onEditProblem: _onEditProblem,
+      ),
     );
-
-    List<Widget> checkinPointList = widget.trip.checkinPoints
-        .map((p) => Text(
-              "${p.time.format(context)} - ${p.description}",
-              style: TextStyle(fontSize: 16),
-            ))
-        .toList();
 
     var title = "${widget.trip.name} - ${widget.trip.shortDate()}";
 
@@ -76,7 +77,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
           ),
         ),
         SubTitle("Problems"),
-        problemList,
+        problemCarousel,
         ExpansionTile(
           title: SubTitle('Forecast'),
           tilePadding: EdgeInsets.all(0.0),
@@ -101,7 +102,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
                         BodyText(widget.trip.terrainPlan.mindset.toString()),
                         SizedBox(height: 8),
                         OverlineText('Turnaround point'),
-                        BodyText(widget.trip.terrainPlan.turnaroundPoint),
+                        BodyText("${widget.trip.terrainPlan.turnaroundTime.format(context)} - ${widget.trip.terrainPlan.turnaroundPoint}"),
                         SizedBox(height: 8),
                         OverlineText('Route'),
                         BodyText(widget.trip.terrainPlan.route),

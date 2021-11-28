@@ -81,7 +81,7 @@ class _TripHazardPageState extends State<TripHazardPage> {
           widget.trip.problems.removeAt(index);
         });
       },
-      itemBuilder: (AvalancheProblemModel item) => ProblemSummary(problem: item, onEditProblem: _onEditProblem),
+      itemBuilder: (AvalancheProblemModel item, int index) => ProblemSummary(problem: item, index: index, onEditProblem: _onEditProblem),
     );
 
     return FormListScreen(

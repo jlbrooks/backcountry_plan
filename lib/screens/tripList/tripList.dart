@@ -76,7 +76,7 @@ class TripListPageState extends State<TripListPage> {
           this.tripList.removeAt(index);
         });
       },
-      itemBuilder: (TripModel item) => TripListItem(trip: item, onTapped: _onTripPressed),
+      itemBuilder: (TripModel item, int index) => TripListItem(trip: item, onTapped: _onTripPressed),
     );
 
     return Scaffold(
