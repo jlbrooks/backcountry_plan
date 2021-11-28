@@ -148,9 +148,7 @@ class _TripTimingPageState extends State<TripTimingPage> {
           title: 'Checkin points',
           subTitle: 'What are the checkin points along the way?',
         ),
-        Expanded(
-          child: checkinPointListView,
-        ),
+        checkinPointListView,
       ],
     );
   }

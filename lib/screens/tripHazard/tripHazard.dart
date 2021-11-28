@@ -107,9 +107,7 @@ class _TripHazardPageState extends State<TripHazardPage> {
           title: 'Avalanche problems',
           subTitle: 'The avalanche problems for the day.',
         ),
-        Expanded(
-          child: problemListView,
-        ),
+        problemListView,
       ],
     );
   }
