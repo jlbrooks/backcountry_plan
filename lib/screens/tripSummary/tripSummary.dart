@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:backcountry_plan/components/screens.dart';
 import 'package:backcountry_plan/components/problem.dart';
 import 'package:backcountry_plan/components/typography.dart';
+import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/models/problem.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/screens/tripNameDate/tripNameDate.dart';
@@ -17,6 +20,28 @@ class TripSummaryPage extends StatefulWidget {
 }
 
 class _TripSummaryPageState extends State<TripSummaryPage> {
+  CheckinPointModel? bannerPoint;
+
+  @override
+  void initState() {
+    super.initState();
+
+    Timer.periodic(Duration(seconds: 5), _updateCheckinPointState);
+  }
+
+  _buildCheckinPointBanner(BuildContext context, CheckinPointModel checkinPoint) {
+    return MaterialBanner(
+      content: Text('${checkinPoint.time.format(context)}: ${checkinPoint.description}'),
+      leading: CircleAvatar(child: Icon(Icons.schedule)),
+      actions: [
+        TextButton(
+          child: const Text('Dismiss'),
+          onPressed: _onDismissBannerPoint,
+        ),
+      ],
+    );
+  }
+
   _onEdit(BuildContext context) async {
     TripModel? result = await Navigator.push<TripModel>(
       context,
@@ -35,6 +60,25 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
         widget.trip.date = result.date;
       });
     }
+  }
+
+  _updateCheckinPointState(Timer t) {
+    if (bannerPoint == null) {
+      var nextPoint = widget.trip.firstNonDismissedCheckin();
+      if (nextPoint != null) {
+        setState(() {
+          bannerPoint = nextPoint;
+        });
+      }
+    }
+  }
+
+  _onDismissBannerPoint() {
+    setState(() {
+      bannerPoint!.dismissed = true;
+      TripStore().save(widget.trip);
+      bannerPoint = null;
+    });
   }
 
   _onEditProblem(BuildContext context, AvalancheProblemModel problem) {}
@@ -57,6 +101,11 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
 
     var title = "${widget.trip.name} - ${widget.trip.shortDate()}";
 
+    Widget banner = Container();
+    if (bannerPoint != null) {
+      banner = _buildCheckinPointBanner(context, bannerPoint!);
+    }
+
     return ListScreen(
       titleText: title,
       actions: [
@@ -66,6 +115,7 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
         )
       ],
       children: [
+        banner,
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(

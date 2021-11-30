@@ -69,6 +69,14 @@ class TripModel {
   bool isPersisted() {
     return key != null;
   }
+
+  CheckinPointModel? firstNonDismissedCheckin() {
+    try {
+      return this.checkinPoints.firstWhere((element) => !element.dismissed);
+    } on StateError {
+      return null;
+    }
+  }
 }
 
 class TripStore {

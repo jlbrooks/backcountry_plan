@@ -1,3 +1,4 @@
+import 'package:backcountry_plan/components/common.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +20,7 @@ class _EditCheckinPointPageState extends State<EditCheckinPointPage> {
   }
 
   _onSave(BuildContext context) {
+    widget.checkinPoint.description = descriptionController.text;
     Navigator.pop(context, widget.checkinPoint);
   }
 
@@ -55,6 +57,7 @@ class _EditCheckinPointPageState extends State<EditCheckinPointPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
+              TextInputTitledSection(title: 'Description', hintText: 'At the top of the first col', controller: descriptionController),
               Row(
                 children: [
                   Expanded(
@@ -72,21 +75,22 @@ class _EditCheckinPointPageState extends State<EditCheckinPointPage> {
                   ),
                 ],
               ),
-              TextFormField(
-                  controller: descriptionController,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                    border: const OutlineInputBorder(),
-                    labelText: 'Description',
-                    hintText: 'Describe the checkin point',
+              Row(
+                children: [
+                  Checkbox(
+                    value: widget.checkinPoint.dismissed,
+                    onChanged: (newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          widget.checkinPoint.dismissed = newValue;
+                        });
+                      }
+                    },
                   ),
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.checkinPoint.description = descriptionController.text;
-                    });
-                  }),
+                  Text('Dismissed?'),
+                ],
+              )
+              // TODO: Add form field for dismissed
             ],
           ),
         ),
