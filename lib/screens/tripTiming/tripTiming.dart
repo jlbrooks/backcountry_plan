@@ -118,7 +118,6 @@ class _TripTimingPageState extends State<TripTimingPage> {
           title: 'Turnaround point',
           subTitle: 'Describe your turnaround point.',
           hintText: 'The top of the mountain',
-          validationText: 'Please enter a turnaround point description',
           controller: turnaroundPointController,
           minLines: 3,
           maxLines: 5,

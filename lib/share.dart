@@ -3,26 +3,40 @@ import 'package:backcountry_plan/models/trip.dart';
 import 'package:flutter/material.dart';
 
 String buildShareMesssage(BuildContext context, TripModel trip, SettingsModel settings) {
-  var message = '''Here are the details for my trip to ${trip.name} on ${trip.shortDate()}:
+  var title = "Here are the details for my trip to ${trip.name} on ${trip.shortDate()}:";
 
-My route plan is:
-${trip.terrainPlan.route}
+  var routeSection = "My route plan is:\n${trip.terrainPlan.route}";
 
-My turnaround time is ${trip.terrainPlan.turnaroundTime.format(context)}, at:
-${trip.terrainPlan.turnaroundPoint}
-
-''';
-
-  if (trip.terrainPlan.mapLink.isNotEmpty) {
-    message += '''Here's a link to a map with my route:
-${trip.terrainPlan.mapLink}
-''';
+  var turnAroundSection = "My turnaround time is ${trip.terrainPlan.turnaroundTime.format(context)}";
+  if (trip.terrainPlan.turnaroundPoint.isNotEmpty) {
+    turnAroundSection += ', at location:\n${trip.terrainPlan.turnaroundPoint}';
   }
 
+  var mapLinkSection = "";
+
+  if (trip.terrainPlan.mapLink.isNotEmpty) {
+    mapLinkSection = "Here's a link to a map with my route:\n${trip.terrainPlan.mapLink}";
+  }
+
+  var gpsTrackerSection = "";
+
   if (settings.trackerMapUrl.isNotEmpty) {
-    message += '''Here's a link to my GPS tracker map:
-${settings.trackerMapUrl}
+    gpsTrackerSection = "Here's a link to my GPS tracker map:\n${settings.trackerMapUrl}";
+  }
+
+  var message = '''$title
+
+$routeSection
+
+$turnAroundSection
 ''';
+
+  if (mapLinkSection.isNotEmpty) {
+    message += "\n$mapLinkSection";
+  }
+
+  if (gpsTrackerSection.isNotEmpty) {
+    message += "\n$gpsTrackerSection";
   }
 
   return message;

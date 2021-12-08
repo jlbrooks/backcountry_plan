@@ -89,7 +89,6 @@ class _TripRoutePageState extends State<TripRoutePage> {
           title: 'Areas to avoid',
           subTitle: "Describe the types of terrain to avoid, based on the weather and avalanche concerns.",
           hintText: 'Sun-affected south-facing slopes',
-          validationText: 'Please enter some areas to avoid',
           controller: areasToAvoidController,
           minLines: 5,
           maxLines: 10,
