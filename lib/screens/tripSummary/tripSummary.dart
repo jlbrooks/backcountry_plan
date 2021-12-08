@@ -5,9 +5,12 @@ import 'package:backcountry_plan/components/problem.dart';
 import 'package:backcountry_plan/components/typography.dart';
 import 'package:backcountry_plan/models/checkinPoint.dart';
 import 'package:backcountry_plan/models/problem.dart';
+import 'package:backcountry_plan/models/settings.dart';
 import 'package:backcountry_plan/models/trip.dart';
 import 'package:backcountry_plan/screens/tripNameDate/tripNameDate.dart';
+import 'package:backcountry_plan/share.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -21,12 +24,16 @@ class TripSummaryPage extends StatefulWidget {
 
 class _TripSummaryPageState extends State<TripSummaryPage> {
   CheckinPointModel? bannerPoint;
+  SettingsModel settings = SettingsModel.create();
 
   @override
   void initState() {
     super.initState();
 
     Timer.periodic(Duration(seconds: 5), _updateCheckinPointState);
+    SettingsStore().getOrCreate().then((value) => setState(() {
+          settings = value;
+        }));
   }
 
   _buildCheckinPointBanner(BuildContext context, CheckinPointModel checkinPoint) {
@@ -83,6 +90,10 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
 
   _onEditProblem(BuildContext context, AvalancheProblemModel problem) {}
 
+  _onShare(BuildContext context) {
+    Share.share(buildShareMesssage(context, widget.trip, settings));
+  }
+
   @override
   Widget build(BuildContext context) {
     var problemCarousel = CarouselSlider.builder(
@@ -109,6 +120,10 @@ class _TripSummaryPageState extends State<TripSummaryPage> {
     return ListScreen(
       titleText: title,
       actions: [
+        IconButton(
+          icon: Icon(Icons.share),
+          onPressed: () => _onShare(context),
+        ),
         IconButton(
           icon: Icon(Icons.edit),
           onPressed: () => _onEdit(context),
