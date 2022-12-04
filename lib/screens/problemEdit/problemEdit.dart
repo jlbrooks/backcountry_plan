@@ -16,7 +16,8 @@ class ProblemEditPage extends StatefulWidget {
 
 class ProblemEditPageState extends State<ProblemEditPage> {
   final AvalancheProblemModel problem;
-  final TextEditingController _terrainFeaturesController = TextEditingController();
+  final TextEditingController _terrainFeaturesController =
+      TextEditingController();
   final TextEditingController _dangerTrendController = TextEditingController();
   RangeValues problemSizeValues = RangeValues(0, 4);
 
@@ -27,7 +28,8 @@ class ProblemEditPageState extends State<ProblemEditPage> {
     super.initState();
     _terrainFeaturesController.text = problem.terrainFeatures;
     _dangerTrendController.text = problem.dangerTrendTiming;
-    problemSizeValues = RangeValues(problem.size.startSize.toDouble(), problem.size.endSize.toDouble());
+    problemSizeValues = RangeValues(
+        problem.size.startSize.toDouble(), problem.size.endSize.toDouble());
   }
 
   @override
@@ -64,7 +66,8 @@ class ProblemEditPageState extends State<ProblemEditPage> {
                   onChanged: (values) {
                     setState(() {
                       problemSizeValues = values;
-                      problem.size.update(values.start.round(), values.end.round());
+                      problem.size
+                          .update(values.start.round(), values.end.round());
                     });
                   },
                 ),
@@ -85,7 +88,8 @@ class ProblemEditPageState extends State<ProblemEditPage> {
                   maxLines: 10,
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    hintText: 'Which features are of primary concern for this problem?',
+                    hintText:
+                        'Which features are of primary concern for this problem?',
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -124,7 +128,9 @@ class ProblemLikelihoodInput extends StatefulWidget {
   final ProblemLikelihood likelihood;
   final bool isEnabled;
 
-  ProblemLikelihoodInput({Key? key, required this.likelihood, this.isEnabled = true}) : super(key: key);
+  ProblemLikelihoodInput(
+      {Key? key, required this.likelihood, this.isEnabled = true})
+      : super(key: key);
 
   @override
   _ProblemLikelihoodInputState createState() => _ProblemLikelihoodInputState();
@@ -146,7 +152,8 @@ class _ProblemLikelihoodInputState extends State<ProblemLikelihoodInput> {
             tickMarkShape: LineSliderTickShape(width: 10),
             thumbShape: LineSliderThumbPoint(
               width: 20,
-              valueStrings: LikelihoodType.values.map((e) => e.toName()).toList(),
+              valueStrings:
+                  LikelihoodType.values.map((e) => e.toName()).toList(),
             ),
           ),
           child: Slider(
@@ -271,7 +278,10 @@ class LineSliderThumbPoint extends SliderComponentShape {
       text: getValueString(value),
     );
 
-    TextPainter tp = new TextPainter(text: span, textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+    TextPainter tp = new TextPainter(
+        text: span,
+        textAlign: TextAlign.center,
+        textDirection: TextDirection.ltr);
     tp.layout();
     Offset textCenter = Offset(center.dx + (tp.height / 2), center.dy + width);
 
@@ -327,7 +337,8 @@ class ProblemAspectInput extends StatefulWidget {
   ProblemAspectInput({Key? key, required this.aspects}) : super(key: key);
 
   @override
-  _ProblemAspectInputState createState() => _ProblemAspectInputState(aspects: aspects);
+  _ProblemAspectInputState createState() =>
+      _ProblemAspectInputState(aspects: aspects);
 }
 
 class _ProblemAspectInputState extends State<ProblemAspectInput> {
@@ -347,6 +358,7 @@ class _ProblemAspectInputState extends State<ProblemAspectInput> {
       child: SizedBox(
         height: 120,
         child: CanvasTouchDetector(
+          gesturesToOverride: [GestureType.onTapDown],
           builder: (context) => CustomPaint(
             painter: AspectSelectorPainter(
               activeAspects: aspects.aspects,
@@ -379,7 +391,10 @@ class AspectSelectorPainter extends CustomPainter {
     AspectType.northEast: startAngle + (7 * angle),
   };
 
-  AspectSelectorPainter({required this.activeAspects, required this.context, required this.onToggle});
+  AspectSelectorPainter(
+      {required this.activeAspects,
+      required this.context,
+      required this.onToggle});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -457,7 +472,8 @@ class AspectSelectorPainter extends CustomPainter {
       double x = labelRadius * math.cos(angleOffset) + center.dx;
       double y = labelRadius * math.sin(angleOffset) + center.dy;
       var painter = _labelTextPainter(ProblemAspect.labels[i]);
-      var labelOffset = Offset(x - (painter.width / 2), y - (painter.height / 2));
+      var labelOffset =
+          Offset(x - (painter.width / 2), y - (painter.height / 2));
       painter.paint(canvas, labelOffset);
     }
   }
@@ -495,7 +511,8 @@ class ProblemElevationInput extends StatefulWidget {
   ProblemElevationInput({Key? key, required this.elevation}) : super(key: key);
 
   @override
-  _ProblemElevationInputState createState() => _ProblemElevationInputState(elevation: elevation);
+  _ProblemElevationInputState createState() =>
+      _ProblemElevationInputState(elevation: elevation);
 }
 
 class _ProblemElevationInputState extends State<ProblemElevationInput> {
@@ -515,6 +532,7 @@ class _ProblemElevationInputState extends State<ProblemElevationInput> {
       child: SizedBox(
         height: 180,
         child: CanvasTouchDetector(
+          gesturesToOverride: [GestureType.onTapDown],
           builder: (context) => CustomPaint(
             painter: ElevationSelectorPainter(
               elevation: elevation,
@@ -547,7 +565,8 @@ class ElevationSelectorPainter extends CustomPainter {
     AspectType.northEast: startAngle + (7 * angle),
   };
 
-  ElevationSelectorPainter({required this.elevation, required this.context, required this.onToggle});
+  ElevationSelectorPainter(
+      {required this.elevation, required this.context, required this.onToggle});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -654,13 +673,15 @@ class ElevationSelectorPainter extends CustomPainter {
     bottomPainter.paint(canvas, belowOffset);
 
     var midLabelX = ((upperLX - bottomLX) / 2) + belowLabelX;
-    var midLabelY = bottomY - (((bottomY - upperY) / 2) + 10 + (bottomY - belowLabelY));
+    var midLabelY =
+        bottomY - (((bottomY - upperY) / 2) + 10 + (bottomY - belowLabelY));
     var midPainter = _labelTextPainter(ElevationType.nearTreeline.toName());
     var midOffset = Offset(midLabelX, midLabelY);
     midPainter.paint(canvas, midOffset);
 
     var upperLabelX = ((upperLX - bottomLX) / 2) + midLabelX;
-    var upperLabelY = bottomY - (((bottomY - upperY) / 2) + (bottomY - midLabelY));
+    var upperLabelY =
+        bottomY - (((bottomY - upperY) / 2) + (bottomY - midLabelY));
     var upperPainter = _labelTextPainter(ElevationType.aboveTreeline.toName());
     var upperOffset = Offset(upperLabelX, upperLabelY);
     upperPainter.paint(canvas, upperOffset);
@@ -717,7 +738,8 @@ class ProblemSizeInput extends StatelessWidget {
             max: 4,
             divisions: 4,
             labels: RangeLabels(
-              AvalancheProblemSize.problemSizes[problemSizeValues.start.round()],
+              AvalancheProblemSize
+                  .problemSizes[problemSizeValues.start.round()],
               AvalancheProblemSize.problemSizes[problemSizeValues.end.round()],
             ),
             onChanged: (values) => onChanged(values),
@@ -730,7 +752,8 @@ class ProblemSizeInput extends StatelessWidget {
 
 class ProblemTypeInput extends StatefulWidget {
   final AvalancheProblemType problemType;
-  const ProblemTypeInput({Key? key, required this.problemType}) : super(key: key);
+  const ProblemTypeInput({Key? key, required this.problemType})
+      : super(key: key);
 
   @override
   _ProblemTypeInputState createState() => _ProblemTypeInputState();
@@ -758,7 +781,8 @@ class _ProblemTypeInputState extends State<ProblemTypeInput> {
             }
           });
         },
-        items: ProblemType.values.map<DropdownMenuItem<ProblemType>>((ProblemType value) {
+        items: ProblemType.values
+            .map<DropdownMenuItem<ProblemType>>((ProblemType value) {
           return DropdownMenuItem<ProblemType>(
             value: value,
             child: Text(value.toName()),
